@@ -99,7 +99,7 @@ const AutomationFeatures = () => {
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
         >
-            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 px-6 items-center transform scale-[0.5] lg:scale-100">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 px-6 items-center transform scale-[0.4] lg:scale-100">
                 <div className="flex flex-col">
                     <h2 className="text-4xl md:text-5xl font-bold mb-10">See It In Action</h2>
                     <div className="space-y-4">
