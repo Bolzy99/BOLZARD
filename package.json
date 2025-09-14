@@ -11,7 +11,6 @@
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@headlessui/react": "^2.2.7",
-    "@tsparticles/react": "^3.0.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.12",
     "gsap": "^3.13.0",
@@ -20,9 +19,7 @@
     "react": "^19.1.1",
     "react-calendly": "^4.4.0",
     "react-dom": "^19.1.1",
-    "react-particles": "^2.12.2",
     "react-tsparticles": "^2.12.2",
-    "tsparticles": "^3.9.1",
     "tsparticles-slim": "^2.12.0"
   },
   "devDependencies": {
