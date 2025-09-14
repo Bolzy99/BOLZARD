@@ -130,7 +130,7 @@ const Hero = () => {
                     From social media and content creation to your daily tasks, BOLZARD brings the power of intelligent automation to every corner of your digital life.
                 </motion.p>
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.7, ease: 'easeOut' }}>
-                    <motion.button whileHover={{ scale: 1.05, boxShadow: "0 0 35px rgba(255, 69, 0, 0.6)" }} whileTap={{ scale: 0.95 }} className="px-4 py-2 bg-primary rounded-full text-white text-base font-bold shadow-lg transition-all duration-300 cursor-pointer">
+                    <motion.button whileHover={{ scale: 1.05, boxShadow: "0 0 35px rgba(255, 69, 0, 0.6)" }} whileTap={{ scale: 0.95 }} className="px-4 py-2 text-base md:px-10 md:py-4 md:text-xl bg-primary rounded-full text-white text-base font-bold shadow-lg transition-all duration-300 cursor-pointer">
                         BEGIN WITH YOUR AUTOMATION JOURNEY
                     </motion.button>
                 </motion.div>
