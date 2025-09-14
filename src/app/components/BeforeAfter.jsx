@@ -29,7 +29,7 @@ export default function BeforeAfter() {
       </div>
 
       {/* Anchor Bar and Pendulums Container */}
-      <div className="relative max-w-6xl mx-auto h-[650px]">
+      <div className="relative max-w-6xl mx-auto h-[400px] md:h-[650px] transform scale-[0.6] md:scale-100">
         {/* Sturdy Anchor Bar */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-4 bg-gradient-to-b from-neutral-600 to-neutral-700 rounded-full shadow-lg" />
         
