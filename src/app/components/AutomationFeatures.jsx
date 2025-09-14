@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Instagram, Globe, Send } from 'lucide-react';
 
-// --- Child Components (No Changes Needed Here) ---
+// --- Child Components (Defined first for clarity) ---
 
 const IPhoneFrame = ({ children }) => (
     <div className="relative w-full max-w-[300px] sm:max-w-[320px] aspect-[9/19.5] bg-neutral-800 rounded-[44px] p-2.5 shadow-2xl border-4 border-neutral-900">
@@ -95,14 +95,12 @@ const AutomationFeatures = () => {
     return (
         <section
             id="automation-features"
-            // RESPONSIVE CHANGE: Added overflow-hidden to prevent scrollbars on mobile
-            className="relative z-10 w-full py-20 md:py-28 text-white overflow-hidden"
+            className="relative z-10 w-full py-20 md:py-28 text-white"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
         >
-            {/* RESPONSIVE CHANGE: Switched from grid to flex, added scaling */}
-            <div className="max-w-7xl mx-auto flex flex-row items-center gap-2 lg:gap-16 px-2 transform scale-[0.8] sm:scale-[0.9] lg:scale-100 transition-transform duration-300">
-                <div className="flex flex-col w-1/2">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 px-6 items-center transform scale-[0.7] lg:scale-100">
+                <div className="flex flex-col">
                     <h2 className="text-4xl md:text-5xl font-bold mb-10">See It In Action</h2>
                     <div className="space-y-4">
                         {features.map((feature, index) => (
@@ -129,7 +127,7 @@ const AutomationFeatures = () => {
                         ))}
                     </div>
                 </div>
-                <div className="relative w-1/2 flex items-center justify-center">
+                <div className="relative w-full flex items-center justify-center">
                     <IPhoneFrame>
                         <AnimatePresence mode="wait">
                             <motion.div
@@ -150,4 +148,4 @@ const AutomationFeatures = () => {
     );
 };
 
-export default AutomationFeatures;
+export default AutomationFeatures
