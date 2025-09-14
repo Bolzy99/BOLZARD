@@ -126,17 +126,17 @@ const Hero = () => {
                         <MagneticLetter key={i}>{letter === " " ? "\u00A0" : letter}</MagneticLetter>
                     ))}
                 </h1>
-                <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.5, ease: 'easeOut' }} className="text-xl md:text-2xl text-slate-300 mb-10 max-w-3xl mx-auto font-medium">
+                <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.5, ease: 'easeOut' }} className="text-base md:text-2xl text-slate-300 mb-10 max-w-3xl mx-auto font-medium">
                     From social media and content creation to your daily tasks, BOLZARD brings the power of intelligent automation to every corner of your digital life.
                 </motion.p>
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.7, ease: 'easeOut' }}>
-                    <motion.button whileHover={{ scale: 1.05, boxShadow: "0 0 35px rgba(255, 69, 0, 0.6)" }} whileTap={{ scale: 0.95 }} className="px-10 py-4 bg-primary rounded-full text-white text-xl font-bold shadow-lg transition-all duration-300 cursor-pointer">
+                    <motion.button whileHover={{ scale: 1.05, boxShadow: "0 0 35px rgba(255, 69, 0, 0.6)" }} whileTap={{ scale: 0.95 }} className="px-6 py-4 bg-primary rounded-full text-white text-base font-bold shadow-lg transition-all duration-300 cursor-pointer">
                         BEGIN WITH YOUR AUTOMATION JOURNEY
                     </motion.button>
                 </motion.div>
             </div>
 
-            <div className="absolute bottom-10 left-4 sm:left-8 md:left-12 w-[90%] max-w-md">
+            <div className="absolute bottom-6 left-2 sm:left-8 md:left-12 w-[90%] max-w-sm">
                 <motion.div style={{ opacity: notificationOpacity }} className="flex flex-col gap-4">
                     <AnimatePresence>
                         {messages.map((msg) => (
