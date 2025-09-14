@@ -101,7 +101,7 @@ const AutomationFeatures = () => {
             onMouseLeave={() => setIsPaused(false)}
         >
             {/* RESPONSIVE CHANGE: Switched from grid to flex, added scaling */}
-            <div className="max-w-7xl mx-auto flex flex-row items-center gap-2 lg:gap-16 px-2 transform scale-[0.7] sm:scale-[0.8] lg:scale-100 transition-transform duration-300">
+            <div className="max-w-7xl mx-auto flex flex-row items-center gap-2 lg:gap-16 px-2 transform scale-[0.8] sm:scale-[0.9] lg:scale-100 transition-transform duration-300">
                 <div className="flex flex-col w-1/2">
                     <h2 className="text-4xl md:text-5xl font-bold mb-10">See It In Action</h2>
                     <div className="space-y-4">
