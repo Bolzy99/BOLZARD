@@ -82,6 +82,7 @@ const Hero = () => {
 
     const notificationOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
+    // **FIX:** Restructured conversation flow for a natural, back-and-forth exchange
     const conversationFlow = [
         { id: 1, text: 'Can you create a website chatbot for me?', avatar: 'https://i.pravatar.cc/32?u=user1', isBot: false },
         { id: 2, text: 'Yes, we build custom website chatbots to engage visitors 24/7.', isBot: true, hasButtons: true },
@@ -94,42 +95,42 @@ const Hero = () => {
     const [messages, setMessages] = useState([]);
 
     useEffect(() => {
+        // **FIX:** More robust logic for cycling through the conversation
         let index = 0;
         const interval = setInterval(() => {
+            // Determine the current and previous messages to display
             const currentMessage = conversationFlow[index % conversationFlow.length];
             const prevIndex = (index - 1 + conversationFlow.length) % conversationFlow.length;
             const previousMessage = conversationFlow[prevIndex];
 
+            // Always show two messages after the first cycle
             if (index > 0) {
                 setMessages([previousMessage, currentMessage]);
             } else {
-                setMessages([currentMessage]);
+                setMessages([currentMessage]); // Show only one message at the start
             }
             
             index++;
-        }, 4000);
+        }, 4000); // Cycle every 4 seconds
 
         return () => clearInterval(interval);
-    }, []);
+    }, []); // Empty dependency array ensures this effect runs only once
 
     return (
         <section ref={heroRef} id="home" className="relative h-screen flex flex-col items-center justify-center overflow-hidden">
             <MemoizedParticleBackground />
             
-            <div className="text-center z-10 px-4 sm:px-6">
-                {/* RESPONSIVE CHANGE: Font size is text-4xl on mobile, text-6xl on small screens, and md:text-7xl on medium screens and up */}
-                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black mb-4">
+            <div className="text-center z-10 px-6">
+                <h1 className="text-6xl md:text-7xl font-black mb-4">
                     {brandName.split("").map((letter, i) => (
                         <MagneticLetter key={i}>{letter === " " ? "\u00A0" : letter}</MagneticLetter>
                     ))}
                 </h1>
-                {/* RESPONSIVE CHANGE: Font size is text-lg on mobile, md:text-2xl on medium screens and up */}
-                <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.5, ease: 'easeOut' }} className="text-lg md:text-2xl text-slate-300 mb-10 max-w-3xl mx-auto font-medium">
+                <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.5, ease: 'easeOut' }} className="text-xl md:text-2xl text-slate-300 mb-10 max-w-3xl mx-auto font-medium">
                     From social media and content creation to your daily tasks, BOLZARD brings the power of intelligent automation to every corner of your digital life.
                 </motion.p>
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.7, ease: 'easeOut' }}>
-                    {/* RESPONSIVE CHANGE: Font size is text-base on mobile, md:text-xl on medium screens and up */}
-                    <motion.button whileHover={{ scale: 1.05, boxShadow: "0 0 35px rgba(255, 69, 0, 0.6)" }} whileTap={{ scale: 0.95 }} className="px-8 py-3 md:px-10 md:py-4 bg-primary rounded-full text-white text-base md:text-xl font-bold shadow-lg transition-all duration-300 cursor-pointer">
+                    <motion.button whileHover={{ scale: 1.05, boxShadow: "0 0 35px rgba(255, 69, 0, 0.6)" }} whileTap={{ scale: 0.95 }} className="px-10 py-4 bg-primary rounded-full text-white text-xl font-bold shadow-lg transition-all duration-300 cursor-pointer">
                         BEGIN WITH YOUR AUTOMATION JOURNEY
                     </motion.button>
                 </motion.div>
@@ -140,7 +141,7 @@ const Hero = () => {
                     <AnimatePresence>
                         {messages.map((msg) => (
                             <ChatBubble 
-                                key={msg.id}
+                                key={msg.id} // The simple ID key now works because we replace the whole array
                                 message={msg.text} 
                                 avatar={msg.avatar} 
                                 isBot={msg.isBot} 
