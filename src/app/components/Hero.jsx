@@ -121,7 +121,7 @@ const Hero = () => {
             <MemoizedParticleBackground />
             
             <div className="text-center z-10 px-6">
-                <h1 className="text-6xl md:text-7xl font-black mb-4">
+                <h1 className="text-4xl md:text-7xl font-black mb-4">
                     {brandName.split("").map((letter, i) => (
                         <MagneticLetter key={i}>{letter === " " ? "\u00A0" : letter}</MagneticLetter>
                     ))}
