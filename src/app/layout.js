@@ -4,26 +4,35 @@ import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ChatbotWidget from "./components/ChatbotWidget";
-import ParticleBackground from "./components/ParticleBackground"; // 1. IMPORT this
+import ParticleBackground from "./components/ParticleBackground";
 
 const instrumentSans = Instrument_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-instrument-sans",
+  variable: '--font-instrument-sans',
 });
 
-// Added: Open Graph + Twitter metadata for share previews
+// The icons object has been corrected and simplified
 export const metadata = {
   title: "BOLZARD - AI Automation",
   description: "Elite AI automation for next-generation business workflows.",
+  
+  // --- CORRECTED 'icons' OBJECT ---
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
+  // --- END OF CORRECTED SECTION ---
+
   openGraph: {
     title: "BOLZARD - AI Automation",
     description: "Elite AI automation for next-generation business workflows.",
-    url: "https://bolzard.com", // replace with your production URL
+    url: "https://bolzard.com",
     siteName: "BOLZARD",
     images: [
       {
-        url: "https://bolzard.com/images/bolzard-preview.png", // file at /public/og-image.png
+        url: "https://bolzard.com/images/bolzard-preview.png",
         width: 1200,
         height: 630,
         alt: "BOLZARD — AI Automation",
@@ -44,7 +53,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${instrumentSans.variable} font-sans`}>
-        <ParticleBackground /> {/* 2. ADD this component here */}
+        <ParticleBackground />
         <Navbar />
         <main>{children}</main>
         <Footer />
