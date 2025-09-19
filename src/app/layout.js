@@ -3,7 +3,8 @@ import { Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import ChatbotWidget from "./components/ChatbotWidget"; // 1. Import the widget
+import ChatbotWidget from "./components/ChatbotWidget";
+import ParticleBackground from "./components/ParticleBackground"; // 1. IMPORT this
 
 const instrumentSans = Instrument_Sans({
   subsets: ["latin"],
@@ -19,13 +20,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${instrumentSans.variable} font-sans bg-black text-white`}>
+      <body className={`${instrumentSans.variable} font-sans`}>
+        <ParticleBackground /> {/* 2. ADD this component here */}
         <Navbar />
-        <main>
-          {children}
-        </main>
+        <main>{children}</main>
         <Footer />
-        <ChatbotWidget /> {/* 2. Add the widget here */}
+        <ChatbotWidget />
       </body>
     </html>
   );
