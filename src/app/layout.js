@@ -3,13 +3,12 @@ import { Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import ChatbotWidget from "./components/ChatbotWidget";
-import ParticleBackground from "./components/ParticleBackground";
+import ChatbotWidget from "./components/ChatbotWidget"; // 1. Import the widget
 
 const instrumentSans = Instrument_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-instrument-sans",
+  variable: '--font-instrument-sans',
 });
 
 export const metadata = {
@@ -20,19 +19,13 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      {/* relative establishes a stacking context for the content wrapper */}
-      <body className={`${instrumentSans.variable} font-sans bg-black text-white relative`}>
-        {/* Full-screen particles behind everything */}
-        <ParticleBackground />
-        {/* Content wrapper sits above particles */}
-        <div className="relative z-10">
-          <Navbar />
-          <main>
-            {children}
-          </main>
-          <Footer />
-          <ChatbotWidget />
-        </div>
+      <body className={`${instrumentSans.variable} font-sans bg-black text-white`}>
+        <Navbar />
+        <main>
+          {children}
+        </main>
+        <Footer />
+        <ChatbotWidget /> {/* 2. Add the widget here */}
       </body>
     </html>
   );
