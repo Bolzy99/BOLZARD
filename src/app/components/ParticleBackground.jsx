@@ -1,7 +1,8 @@
 "use client";
-import React from 'react';
-import Particles from 'react-tsparticles';
-import { loadSlim } from 'tsparticles-slim';
+
+import React from "react";
+import Particles from "react-tsparticles";
+import { loadSlim } from "tsparticles-slim";
 
 const ParticleBackground = () => {
   const options = {
@@ -25,12 +26,10 @@ const ParticleBackground = () => {
     },
     particles: {
       color: {
-        // UPDATED: Particles now use the new blue color
-        value: "#007cf0", 
+        value: "#007cf0",
       },
       links: {
-        // UPDATED: Links now use the new purple/magenta color
-        color: "#9f00ff", 
+        color: "#9f00ff",
         distance: 150,
         enable: true,
         opacity: 0.2,
@@ -42,7 +41,7 @@ const ParticleBackground = () => {
         outModes: {
           default: "bounce",
         },
-        random: false,
+        random: true,
         speed: 1,
         straight: false,
       },
@@ -64,16 +63,19 @@ const ParticleBackground = () => {
       },
     },
     detectRetina: true,
+    // Ensure the canvas stays behind all content globally
+    fullScreen: { enable: true, zIndex: -1 },
   };
 
   return (
     <Particles
       id="tsparticles"
-      init={(engine) => {
-        loadSlim(engine);
+      init={async (engine) => {
+        await loadSlim(engine);
       }}
       options={options}
-      className="absolute inset-0 z-0"
+      // Prevent the canvas from capturing clicks and ensure it's behind
+      className="pointer-events-none"
     />
   );
 };
