@@ -4,12 +4,12 @@ import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ChatbotWidget from "./components/ChatbotWidget";
-import ParticleBackground from "./components/ParticleBackground"; // ADDED
+import ParticleBackground from "./components/ParticleBackground";
 
 const instrumentSans = Instrument_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: '--font-instrument-sans',
+  variable: "--font-instrument-sans",
 });
 
 export const metadata = {
@@ -20,16 +20,19 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      {/* Make body relative so the background canvas can anchor and sit behind all content */}
+      {/* relative establishes a stacking context for the content wrapper */}
       <body className={`${instrumentSans.variable} font-sans bg-black text-white relative`}>
-        {/* Render particles once, globally */}
+        {/* Full-screen particles behind everything */}
         <ParticleBackground />
-        <Navbar />
-        <main>
-          {children}
-        </main>
-        <Footer />
-        <ChatbotWidget />
+        {/* Content wrapper sits above particles */}
+        <div className="relative z-10">
+          <Navbar />
+          <main>
+            {children}
+          </main>
+          <Footer />
+          <ChatbotWidget />
+        </div>
       </body>
     </html>
   );
