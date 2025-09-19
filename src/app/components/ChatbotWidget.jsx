@@ -9,7 +9,7 @@ import Link from "next/link";
 
 
 // --- CONFIGURATION ---
-const WEBHOOK_URL = "https://suitable-rapidly-terrier.ngrok-free.app/webhook/skynet"; 
+const WEBHOOK_URL = "https://n8n.srv1018795.hstgr.cloud/webhook/bolzard"; 
 const BOT_NAME = "BOLZARD AI";
 const INITIAL_MESSAGE = {
   id: "init",
