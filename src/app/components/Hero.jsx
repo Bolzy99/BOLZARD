@@ -3,6 +3,7 @@
 import { motion, useMotionValue, useTransform, animate, useScroll, AnimatePresence } from 'framer-motion'
 import { useEffect, useRef, useState, memo } from 'react'
 import ParticleBackground from './ParticleBackground'
+import Link from 'next/link'
 
 // Memoize the heavy ParticleBackground component to prevent it from re-rendering
 const MemoizedParticleBackground = memo(ParticleBackground);
@@ -59,12 +60,16 @@ const ChatBubble = ({ message, avatar, isBot, hasButtons }) => (
             <p>{message}</p>
             {hasButtons && (
                 <div className="mt-3 flex flex-wrap gap-2">
-                    <motion.button className="rounded-lg bg-purple-600/50 px-3 py-1.5 text-white/90 text-xs sm:text-sm">
-                        Schedule a Call
-                    </motion.button>
-                    <motion.button className="rounded-lg bg-white/10 px-3 py-1.5 text-white/90 text-xs sm:text-sm">
-                        Learn More
-                    </motion.button>
+                    <Link href="/book-call">
+                        <motion.button className="rounded-lg bg-purple-600/50 px-3 py-1.5 text-white/90 text-xs sm:text-sm">
+                            Schedule a Call
+                        </motion.button>
+                    </Link>
+                    <Link href="/services">
+                        <motion.button className="rounded-lg bg-white/10 px-3 py-1.5 text-white/90 text-xs sm:text-sm">
+                            Learn More
+                        </motion.button>
+                    </Link>
                 </div>
             )}
         </div>
@@ -130,9 +135,11 @@ const Hero = () => {
                     From social media and content creation to your daily tasks, BOLZARD brings the power of intelligent automation to every corner of your digital life.
                 </motion.p>
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.7, ease: 'easeOut' }}>
-                    <motion.button whileHover={{ scale: 1.05, boxShadow: "0 0 35px rgba(255, 69, 0, 0.6)" }} whileTap={{ scale: 0.95 }} className="px-4 py-2 text-base md:px-10 md:py-4 md:text-xl bg-primary rounded-full text-white text-base font-bold shadow-lg transition-all duration-300 cursor-pointer">
-                        BEGIN WITH YOUR AUTOMATION JOURNEY
-                    </motion.button>
+                    <Link href="/book-call">
+                        <motion.button whileHover={{ scale: 1.05, boxShadow: "0 0 35px rgba(255, 69, 0, 0.6)" }} whileTap={{ scale: 0.95 }} className="px-4 py-2 text-base md:px-10 md:py-4 md:text-xl bg-primary rounded-full text-white text-base font-bold shadow-lg transition-all duration-300 cursor-pointer">
+                            BEGIN WITH YOUR AUTOMATION JOURNEY
+                        </motion.button>
+                    </Link>      
                 </motion.div>
             </div>
 
