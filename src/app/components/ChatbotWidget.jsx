@@ -85,7 +85,7 @@ const ChatMessage = ({ message }) => {
 };
 
 
-const QuickReplies = ({ replies, onReplyClick }) => (
+const QuickReplies = ({ replies = [], onReplyClick }) => (
   <motion.div
     className="flex flex-wrap gap-2 justify-start px-4 py-2"
     initial={{ opacity: 0, y: 20 }}
