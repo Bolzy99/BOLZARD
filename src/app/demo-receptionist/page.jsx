@@ -1,5 +1,3 @@
-'''
-// src/app/demo-receptionist/page.jsx
 "use client";
 
 import Script from "next/script";
@@ -10,7 +8,7 @@ export default function DemoReceptionist() {
       <main
         className="relative min-h-screen flex flex-col items-center justify-center p-4 bg-cover bg-center"
         style={{
-          backgroundImage: "url('/restaurant-background.jpg')", // <-- IMPORTANT: Upload your image to the /public folder and name it restaurant-background.jpg, or update this path.
+          backgroundImage: "url('/restaurant-background.jpg')", // IMPORTANT: Upload your image to the /public folder and name it restaurant-background.jpg
         }}
       >
         {/* Soothing Gradient Overlay */}
@@ -35,4 +33,3 @@ export default function DemoReceptionist() {
     </>
   );
 }
-'''
