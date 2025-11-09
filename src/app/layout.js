@@ -1,10 +1,7 @@
-// src/app/layout.js
 import { Instrument_Sans } from "next/font/google";
 import "./globals.css";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import ChatbotWidget from "./components/ChatbotWidget";
-import ParticleBackground from "./components/ParticleBackground";
+// Import the new component we will create
+import ConditionalLayout from "./components/ConditionalLayout";
 
 const instrumentSans = Instrument_Sans({
   subsets: ["latin"],
@@ -12,19 +9,15 @@ const instrumentSans = Instrument_Sans({
   variable: '--font-instrument-sans',
 });
 
-// The icons object has been corrected and simplified
+// Your metadata remains UNTOUCHED and will work correctly.
 export const metadata = {
   title: "BOLZARD - AI Automation",
   description: "Elite AI automation for next-generation business workflows.",
-  
-  // --- CORRECTED 'icons' OBJECT ---
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
-  // --- END OF CORRECTED SECTION ---
-
   openGraph: {
     title: "BOLZARD - AI Automation",
     description: "Elite AI automation for next-generation business workflows.",
@@ -53,11 +46,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${instrumentSans.variable} font-sans`}>
-        <ParticleBackground />
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
-        <ChatbotWidget />
+        {/* The new component now wraps your page content */}
+        <ConditionalLayout>{children}</ConditionalLayout>
       </body>
     </html>
   );
