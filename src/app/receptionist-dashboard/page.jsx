@@ -15,7 +15,6 @@ function getTodayISO() {
 }
 
 export default function ReceptionistDashboard() {
-  // State now defaults to an empty array, will be filled by the API call
   const [reservations, setReservations] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({
@@ -25,7 +24,7 @@ export default function ReceptionistDashboard() {
   const [isClient, setIsClient] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);
 
-  // --- NEW: Function to fetch reservations from your API ---
+  // Function to fetch reservations from your API
   const fetchReservations = async () => {
     const response = await fetch('/api/reservations');
     if (response.ok) {
@@ -33,11 +32,11 @@ export default function ReceptionistDashboard() {
       setReservations(data);
     } else {
       console.error("Failed to fetch reservations.");
-      setReservations([]); // Set to empty array on failure
+      setReservations([]);
     }
   };
 
-  // On component mount, set the initial date and fetch data from the API
+  // On component mount, set the initial date and fetch data
   useEffect(() => {
     const today = getTodayISO();
     setDateSelected(today);
@@ -46,7 +45,12 @@ export default function ReceptionistDashboard() {
     fetchReservations();
   }, []);
 
-  // --- UPDATED: Add a reservation via API ---
+  // --- THIS IS THE CORRECTED LINE ---
+  const allDates = Array.from(
+    new Set([ ...reservations.map((r) => r.date), isClient ? getTodayISO() : "" ])
+  ).filter(Boolean).sort();
+  // --- END OF CORRECTION ---
+
   async function handleAddReservation(e) {
     e.preventDefault();
     const response = await fetch('/api/reservations', {
@@ -56,7 +60,7 @@ export default function ReceptionistDashboard() {
     });
 
     if (response.ok) {
-      await fetchReservations(); // Refresh the list from the server
+      await fetchReservations();
       setShowModal(false);
       setModalData({ name: "", date: dateSelected, time: "", partySize: "", contact: "", specialRequest: "", bookedBy: "Staff" });
     } else {
@@ -65,27 +69,21 @@ export default function ReceptionistDashboard() {
     }
   }
 
-  // --- UPDATED: Remove a reservation via API ---
   async function handleRemoveReservation(reservationToRemove) {
     const response = await fetch('/api/reservations', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(reservationToRemove), // Send identifier
+        body: JSON.stringify(reservationToRemove),
     });
 
     if (response.ok) {
-        await fetchReservations(); // Refresh the list from the server
+        await fetchReservations();
     } else {
         alert('Failed to delete reservation.');
     }
-    setDeleteMode(false); // Exit delete mode
+    setDeleteMode(false);
   }
-
-  // Helper functions and derived state (no changes here)
-  const allDates = Array.from(
-    new Set([ ...reservations.map((r) => r.date), isClient ? getTodayISO() : "" ])
-  ).filter(Boolean).sort();
-
+  
   const getDayString = (date) =>
     new Date(date + "T00:00").toLocaleDateString("en-SG", {
       year: "numeric", month: "long", day: "numeric", weekday: "long", timeZone: sgTimeZone,
@@ -94,10 +92,9 @@ export default function ReceptionistDashboard() {
   const viewReservations = reservations.filter((r) => r.date === dateSelected);
 
   if (!isClient) {
-    return null; // Prevents hydration errors
+    return null;
   }
 
-  // --- The JSX remains exactly the same ---
   return (
     <main className="min-h-screen bg-[#18181b] text-white font-sans pb-14 receptionist-dashboard">
       {/* Header Banner */}
