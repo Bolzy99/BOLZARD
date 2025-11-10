@@ -5,26 +5,25 @@ import Script from "next/script";
 export default function DemoReceptionist() {
   return (
     <>
-      <main
-        className="relative min-h-screen flex flex-col items-center justify-center p-4 bg-cover bg-center"
-        style={{
-          backgroundImage: "url('/restaurant-background.jpg')", // IMPORTANT: Upload your image to the /public folder and name it restaurant-background.jpg
-        }}
-      >
-        {/* Soothing Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-200/70 via-rose-200/70 to-amber-200/70"></div>
-
-        {/* Content Wrapper */}
-        <div className="relative z-10 w-full flex flex-col items-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 text-center mb-8 shadow-sm">
-            BIG FOOD RESTAURANT SINGAPORE VOICE RECEPTIONIST
+      <main className="min-h-screen w-full bg-black relative overflow-hidden p-8">
+        {/* Full-Screen Background Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center animate-fade-in-slow"
+          style={{ backgroundImage: "url('/restaurant-hero.jpg')" }}
+        ></div>
+        {/* Dark Overlay */}
+        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+        {/* Centered Heading at the Top */}
+        <div className="absolute top-8 left-1/2 -translate-x-1/2 w-full max-w-md text-center z-10 px-4">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
+            Big Food Restaurant
           </h1>
-
-          {/* Widget Container */}
-          <div className="w-full max-w-xl h-[600px] rounded-lg shadow-2xl overflow-hidden">
-            <elevenlabs-convai agent-id="agent_6301k9kvm5r5fmwb600nqgxjk0fc"></elevenlabs-convai>
-          </div>
+          <p className="mt-1 text-md md:text-lg text-white/70">
+            AI Voice Receptionist
+          </p>
         </div>
+        {/* The ElevenLabs Widget (centered by script) */}
+        <elevenlabs-convai agent-id="agent_6301k9kvm5r5fmwb600nqgxjk0fc"></elevenlabs-convai>
       </main>
       <Script
         src="https://unpkg.com/@elevenlabs/convai-widget-embed"
