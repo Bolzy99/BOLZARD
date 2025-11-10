@@ -5,7 +5,7 @@ import Script from "next/script";
 export default function DemoReceptionist() {
   return (
     <>
-      <main className="min-h-screen w-full bg-black relative overflow-hidden p-8">
+      <main className="fixed inset-0 w-screen h-screen bg-black overflow-hidden relative">
         {/* Full-Screen Background Image */}
         <div
           className="absolute inset-0 bg-cover bg-center animate-fade-in-slow"
