@@ -32,11 +32,11 @@ export default function ReceptionistDashboard() {
   const [modalData, setModalData] = useState({
     name: "", date: "", time: "", partySize: "", contact: "", specialRequest: "", bookedBy: "Staff",
   });
-  const [dateSelected, setDateSelected] = useState("");
+  // --- FIX 1: Initialize dateSelected with today's date ---
+  const [dateSelected, setDateSelected] = useState(getTodayISO());
   const [isClient, setIsClient] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);
 
-  // --- CORRECTED: All fetch calls now use the simple, relative URL ---
   const fetchReservations = async () => {
     const response = await fetch('/api/reservations'); 
     if (response.ok) {
@@ -48,19 +48,24 @@ export default function ReceptionistDashboard() {
     }
   };
 
+  // On component mount, just fetch the data. The date is already set.
   useEffect(() => {
-    const today = getTodayISO();
-    setDateSelected(today);
-    setModalData(prev => ({ ...prev, date: today }));
-    setIsClient(true);
     fetchReservations();
+    setIsClient(true);
   }, []);
+
+  // --- FIX 3: Add a new useEffect to keep the modal date in sync ---
+  useEffect(() => {
+    setModalData(prev => ({...prev, date: dateSelected}));
+  }, [dateSelected, showModal]); // Update when the date changes OR when the modal is opened
+
 
   const futureDates = isClient ? getNextNDaysISO(3) : [];
   const reservationDates = reservations.map(r => r.date);
   
+  // Also ensure the currently selected date is always in the list
   const allDates = Array.from(
-    new Set([...futureDates, ...reservationDates])
+    new Set([...futureDates, ...reservationDates, dateSelected])
   ).filter(Boolean).sort();
 
   async function handleAddReservation(e) {
@@ -74,6 +79,9 @@ export default function ReceptionistDashboard() {
     if (response.ok) {
       await fetchReservations();
       setShowModal(false);
+      // --- FIX 2: Add a confirmation alert ---
+      alert(`Reservation confirmed for ${modalData.name} on ${modalData.date} at ${modalData.time}!`);
+      // Reset the form, keeping the currently selected date
       setModalData({ name: "", date: dateSelected, time: "", partySize: "", contact: "", specialRequest: "", bookedBy: "Staff" });
     } else {
       const error = await response.json();
@@ -90,6 +98,8 @@ export default function ReceptionistDashboard() {
 
     if (response.ok) {
         await fetchReservations();
+        // Also add a confirmation for deletion
+        alert(`Successfully deleted reservation for ${reservationToRemove.name}.`);
     } else {
         alert('Failed to delete reservation.');
     }
