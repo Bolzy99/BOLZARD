@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */ // Add this line
 "use client";
 
 import { useEffect, useState } from "react";
@@ -57,12 +56,14 @@ export default function ReceptionistDashboard() {
   }, []);
 
   // --- NEW DROPDOWN LOGIC ---
-  // It now includes the next 3 days plus any other days with bookings.
-  const futureDates = isClient ? getNextNDaysISO(3) : []; // Today, tomorrow, day after
+  const futureDates = isClient ? getNextNDaysISO(3) : [];
   const reservationDates = reservations.map(r => r.date);
+  
+  // --- THIS IS YOUR SUGGESTED FIX ---
   const allDates = Array.from(
-    new Set([...futureDates, ...reservationDates])
+    new globalThis.Set([...futureDates, ...reservationDates])
   ).filter(Boolean).sort();
+  // --- END OF FIX ---
 
   // The Add and Remove functions are already correct and use the API
   async function handleAddReservation(e) {
@@ -111,7 +112,6 @@ export default function ReceptionistDashboard() {
 
   return (
     <main className="min-h-screen bg-[#18181b] text-white font-sans pb-14 receptionist-dashboard">
-      {/* Header Banner */}
       <div className="w-full bg-gradient-to-r from-pink-500/80 via-purple-700/70 to-orange-400/70 py-8 px-2 flex flex-col items-center shadow-lg">
         <img
           src="/restaurant-logo.png"
@@ -127,7 +127,6 @@ export default function ReceptionistDashboard() {
             <span className="hidden md:inline">| </span>
             <span>Date:</span>
             <div className="inline-block relative ml-2">
-              {/* --- NEW STYLING FOR DROPDOWN --- */}
               <select
                 className="appearance-none bg-white/20 rounded-xl px-4 py-2 pr-8 border border-white/30 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all cursor-pointer"
                 value={dateSelected}
@@ -151,7 +150,6 @@ export default function ReceptionistDashboard() {
         </div>
       </div>
 
-      {/* Reservation Table */}
       <section className="max-w-5xl mx-auto bg-white/10 mt-8 rounded-2xl shadow-lg overflow-x-auto p-4 md:p-8">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <h2 className="text-2xl font-semibold text-center sm:text-left flex-shrink-0">
@@ -237,7 +235,6 @@ export default function ReceptionistDashboard() {
         </div>
       </section>
 
-      {/* Add Reservation Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 z-40 flex items-center justify-center">
           <form
@@ -322,12 +319,9 @@ export default function ReceptionistDashboard() {
           </form>
         </div>
       )}
-
-      {/* Footer */}
       <footer className="w-full text-center mt-12 py-6 text-white/60 text-sm">
         &copy; {new Date().getFullYear()} {restaurantName} | Reservations managed by BOLZARD
       </footer>
     </main>
   );
 }
-
