@@ -36,9 +36,9 @@ export default function ReceptionistDashboard() {
   const [isClient, setIsClient] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);
 
-  // --- REVERTED: All fetch calls now use the simple, relative URL ---
+  // --- CORRECTED: All fetch calls now use the simple, relative URL ---
   const fetchReservations = async () => {
-    const response = await fetch('/api/reservations'); // Reverted
+    const response = await fetch('/api/reservations'); 
     if (response.ok) {
       const data = await response.json();
       setReservations(data);
@@ -59,14 +59,13 @@ export default function ReceptionistDashboard() {
   const futureDates = isClient ? getNextNDaysISO(3) : [];
   const reservationDates = reservations.map(r => r.date);
   
-  // Using new Set() again, which is now declared as a global for ESLint
   const allDates = Array.from(
     new Set([...futureDates, ...reservationDates])
   ).filter(Boolean).sort();
 
   async function handleAddReservation(e) {
     e.preventDefault();
-    const response = await fetch('/api/reservations', { // Reverted
+    const response = await fetch('/api/reservations', { 
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(modalData),
@@ -83,7 +82,7 @@ export default function ReceptionistDashboard() {
   }
 
   async function handleRemoveReservation(reservationToRemove) {
-    const response = await fetch('/api/reservations', { // Reverted
+    const response = await fetch('/api/reservations', { 
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(reservationToRemove),
