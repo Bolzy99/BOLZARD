@@ -7,11 +7,7 @@ const totalSeats = 60;
 const restaurantName = "Big Food Restaurant, Singapore";
 const sgTimeZone = "Asia/Singapore";
 
-// This will use the deployed URL on Netlify and localhost for local development
-const API_BASE_URL = process.env.NEXT_PUBLIC_VERCEL_URL 
-  ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` 
-  : 'http://localhost:3000';
-
+// Helper functions remain the same
 function getTodayISO() {
   const today = new Date();
   return new Date(
@@ -40,13 +36,14 @@ export default function ReceptionistDashboard() {
   const [isClient, setIsClient] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);
 
+  // --- REVERTED: All fetch calls now use the simple, relative URL ---
   const fetchReservations = async () => {
-    const response = await fetch(`${API_BASE_URL}/api/reservations`);
+    const response = await fetch('/api/reservations'); // Reverted
     if (response.ok) {
       const data = await response.json();
       setReservations(data);
     } else {
-      console.error("Failed to fetch reservations from:", `${API_BASE_URL}/api/reservations`);
+      console.error("Failed to fetch reservations.");
       setReservations([]);
     }
   };
@@ -69,7 +66,7 @@ export default function ReceptionistDashboard() {
 
   async function handleAddReservation(e) {
     e.preventDefault();
-    const response = await fetch(`${API_BASE_URL}/api/reservations`, {
+    const response = await fetch('/api/reservations', { // Reverted
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(modalData),
@@ -86,7 +83,7 @@ export default function ReceptionistDashboard() {
   }
 
   async function handleRemoveReservation(reservationToRemove) {
-    const response = await fetch(`${API_BASE_URL}/api/reservations`, {
+    const response = await fetch('/api/reservations', { // Reverted
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(reservationToRemove),
