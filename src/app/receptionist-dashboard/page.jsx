@@ -32,8 +32,8 @@ export default function ReceptionistDashboard() {
   const [modalData, setModalData] = useState({
     name: "", date: "", time: "", partySize: "", contact: "", specialRequest: "", bookedBy: "Staff",
   });
-  // --- FIX 1: Initialize dateSelected with today's date ---
-  const [dateSelected, setDateSelected] = useState(getTodayISO());
+  // --- FIX 1: Initialize dateSelected as an empty string ---
+  const [dateSelected, setDateSelected] = useState(""); 
   const [isClient, setIsClient] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);
 
@@ -48,22 +48,28 @@ export default function ReceptionistDashboard() {
     }
   };
 
-  // On component mount, just fetch the data. The date is already set.
+  // On component mount, set the date and fetch the data
   useEffect(() => {
-    fetchReservations();
+    // --- FIX 1 CONTINUED: Set the date only on the client ---
+    const today = getTodayISO();
+    setDateSelected(today);
+    
     setIsClient(true);
+    fetchReservations();
   }, []);
 
   // --- FIX 3: Add a new useEffect to keep the modal date in sync ---
   useEffect(() => {
-    setModalData(prev => ({...prev, date: dateSelected}));
-  }, [dateSelected, showModal]); // Update when the date changes OR when the modal is opened
+    // This ensures the modal always opens with the currently selected date
+    if (dateSelected) {
+        setModalData(prev => ({...prev, date: dateSelected}));
+    }
+  }, [dateSelected, showModal]);
 
 
   const futureDates = isClient ? getNextNDaysISO(3) : [];
   const reservationDates = reservations.map(r => r.date);
   
-  // Also ensure the currently selected date is always in the list
   const allDates = Array.from(
     new Set([...futureDates, ...reservationDates, dateSelected])
   ).filter(Boolean).sort();
@@ -81,7 +87,6 @@ export default function ReceptionistDashboard() {
       setShowModal(false);
       // --- FIX 2: Add a confirmation alert ---
       alert(`Reservation confirmed for ${modalData.name} on ${modalData.date} at ${modalData.time}!`);
-      // Reset the form, keeping the currently selected date
       setModalData({ name: "", date: dateSelected, time: "", partySize: "", contact: "", specialRequest: "", bookedBy: "Staff" });
     } else {
       const error = await response.json();
