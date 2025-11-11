@@ -1,130 +1,82 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { supabase } from '@/utils/supabase'; // Import the client
 
-// This path should point to public/data/reservations.json
-const filePath = path.join(process.cwd(), 'public', 'data', 'reservations.json');
+// GET: To fetch all reservations
+export async function GET() {
+  const { data, error } = await supabase
+    .from('reservations')
+    .select();
 
-// --- Helper functions with logging ---
-const readReservations = () => {
-  console.log('Attempting to read reservations from:', filePath);
-  try {
-    if (!fs.existsSync(filePath)) {
-      console.log('File does not exist, returning empty array.');
-      return [];
-    }
-    const jsonData = fs.readFileSync(filePath, 'utf8');
-    console.log('Successfully read file content.');
-    return jsonData ? JSON.parse(jsonData) : [];
-  } catch (error) {
-    console.error('Error reading reservations file:', error);
-    // Return empty array on error to prevent crashing the app
-    return [];
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
-};
-
-const writeReservations = (data) => {
-  console.log('Attempting to write reservations to:', filePath);
-  try {
-    const dirPath = path.dirname(filePath);
-    if (!fs.existsSync(dirPath)) {
-      console.log('Directory does not exist, creating it.');
-      fs.mkdirSync(dirPath, { recursive: true });
-    }
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    console.log('Successfully wrote to file.');
-  } catch (error) {
-    console.error('Error writing reservations file:', error);
-    // Re-throw the error to indicate the write operation failed
-    throw error;
-  }
-};
-
-// --- API Functions with Logging ---
-
-export async function GET(request) {
-  console.log('--- Received GET Request ---');
-  try {
-    const reservations = readReservations();
-    return NextResponse.json(reservations);
-  } catch (error) {
-    console.error('[GET] Caught error:', error);
-    return NextResponse.json({ message: 'Failed to read reservations.' }, { status: 500 });
-  }
+  return NextResponse.json(data);
 }
 
+// POST: To create a new reservation
 export async function POST(request) {
-  console.log('--- Received POST Request ---');
-  try {
-    const newReservation = await request.json();
-    console.log('POST body:', newReservation);
-    
-    const allReservations = readReservations();
-    const isSlotTaken = allReservations.some(
-      (res) => res.date === newReservation.date && res.time === newReservation.time
-    );
+  const { name, date, time, partySize, contact, specialRequest, bookedBy } = await request.json();
 
-    if (isSlotTaken) {
-      console.log('Slot is already taken. Returning 409.');
-      return NextResponse.json({ message: 'This time slot is already booked.' }, { status: 409 });
-    }
+  // Check for availability
+  const { data: existing, error: checkError } = await supabase
+    .from('reservations')
+    .select('id')
+    .eq('date', date)
+    .eq('time', time);
 
-    allReservations.push(newReservation);
-    writeReservations(allReservations);
-
-    console.log('Reservation added successfully.');
-    return NextResponse.json(newReservation, { status: 201 });
-  } catch (error) {
-    console.error('[POST] Caught error:', error);
-    return NextResponse.json({ message: 'Failed to create reservation.' }, { status: 500 });
+  if (checkError) {
+    return NextResponse.json({ error: checkError.message }, { status: 500 });
   }
+
+  if (existing && existing.length > 0) {
+    return NextResponse.json({ message: 'This time slot is already booked.' }, { status: 409 });
+  }
+
+  // Insert the new reservation
+  const { error: insertError } = await supabase
+    .from('reservations')
+    .insert([{ name, date, time, partySize, contact, specialRequest, bookedBy }]);
+
+  if (insertError) {
+    return NextResponse.json({ error: insertError.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ message: 'Reservation created successfully' }, { status: 201 });
 }
 
+// DELETE: To remove a reservation
 export async function DELETE(request) {
-  console.log('--- Received DELETE Request ---');
-  try {
-    const reservationToDelete = await request.json();
-    console.log('DELETE body:', reservationToDelete);
+  const { name, date, time } = await request.json();
 
-    let allReservations = readReservations();
-    const initialLength = allReservations.length;
-
-    const updatedReservations = allReservations.filter(
-      (res) =>
-        !(res.name === reservationToDelete.name &&
-          res.date === reservationToDelete.date &&
-          res.time === reservationToDelete.time)
-    );
-
-    if (updatedReservations.length === initialLength) {
-      console.log('Reservation to delete not found.');
-      return NextResponse.json({ message: 'Reservation not found.' }, { status: 404 });
-    }
-
-    writeReservations(updatedReservations);
-    console.log('Reservation deleted successfully.');
-    return NextResponse.json({ message: 'Reservation deleted.' });
-  } catch (error) {
-    console.error('[DELETE] Caught error:', error);
-    return NextResponse.json({ message: 'Failed to delete reservation.' }, { status: 500 });
+  if (!name || !date || !time) {
+      return NextResponse.json({ message: 'Missing required fields for deletion.' }, { status: 400 });
   }
+
+  const { error } = await supabase
+    .from('reservations')
+    .delete()
+    .match({ name: name, date: date, time: time });
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ message: 'Reservation deleted' }, { status: 200 });
 }
 
+// PATCH: To check for time slot availability
 export async function PATCH(request) {
-  console.log('--- Received PATCH Request ---');
-  try {
-    const { date, time } = await request.json();
-    console.log('PATCH body:', { date, time });
+  const { date, time } = await request.json();
 
-    const allReservations = readReservations();
-    const isSlotTaken = allReservations.some(
-      (res) => res.date === date && res.time === time
-    );
+  const { data, error } = await supabase
+    .from('reservations')
+    .select('id')
+    .eq('date', date)
+    .eq('time', time);
 
-    console.log('Availability check result:', { available: !isSlotTaken });
-    return NextResponse.json({ available: !isSlotTaken });
-  } catch (error) {
-    console.error('[PATCH] Caught error:', error);
-    return NextResponse.json({ message: 'Invalid request body.' }, { status: 400 });
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  return NextResponse.json({ available: data.length === 0 });
 }
