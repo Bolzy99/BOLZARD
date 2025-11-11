@@ -2,29 +2,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
+// --- FIX: Import the new date/timezone libraries ---
+import { format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 
 const totalSeats = 60;
 const restaurantName = "Big Food Restaurant, Singapore";
 const sgTimeZone = "Asia/Singapore";
 
-// --- DEBUGGING: Add logs to the date function ---
+// --- FIX: A much more reliable way to get the current date ---
 function getTodayISO() {
-  console.log('--- getTodayISO() called ---');
-  const today = new Date();
-  const todayISO = new Date(
-    today.toLocaleString("en-US", { timeZone: sgTimeZone })
-  ).toISOString().split("T")[0];
-  console.log('Returning date:', todayISO);
-  return todayISO;
+  const now = new Date();
+  const zonedDate = toZonedTime(now, sgTimeZone);
+  return format(zonedDate, 'yyyy-MM-dd');
 }
 
 const getNextNDaysISO = (n) => {
     const dates = [];
-    const baseDate = new Date(new Date().toLocaleString("en-US", { timeZone: sgTimeZone }));
+    const baseDate = toZonedTime(new Date(), sgTimeZone); // Use the zoned time as the base
     for (let i = 0; i < n; i++) {
         const date = new Date(baseDate);
         date.setDate(date.getDate() + i);
-        dates.push(date.toISOString().split("T")[0]);
+        // We can use the same toZonedTime again to be safe, though setDate should be okay
+        const zonedDate = toZonedTime(date, sgTimeZone);
+        dates.push(format(zonedDate, 'yyyy-MM-dd'));
     }
     return dates;
 };
@@ -35,13 +36,7 @@ export default function ReceptionistDashboard() {
   const [modalData, setModalData] = useState({
     name: "", date: "", time: "", partySize: "", contact: "", specialRequest: "", bookedBy: "Staff",
   });
-  
-  // --- DEBUGGING: Log the initial date ---
-  const [dateSelected, setDateSelected] = useState(() => {
-    const initialDate = getTodayISO();
-    console.log('useState initial date:', initialDate);
-    return initialDate;
-  });
+  const [dateSelected, setDateSelected] = useState(getTodayISO()); // This will now be correct
   const [isClient, setIsClient] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);
 
@@ -57,27 +52,13 @@ export default function ReceptionistDashboard() {
   };
 
   useEffect(() => {
-    // --- DEBUGGING: Log date on client mount ---
-    console.log('Client-side useEffect running. Today is:', getTodayISO());
-    console.log('dateSelected state on mount:', dateSelected);
-
-    // Forcefully update the date if there's a mismatch
-    const clientToday = getTodayISO();
-    if (dateSelected !== clientToday) {
-        console.log('!!! Date mismatch detected! Forcing update. !!!');
-        setDateSelected(clientToday);
-    }
-    
-    setIsClient(true);
     fetchReservations();
+    setIsClient(true);
   }, []);
 
   useEffect(() => {
-    if (dateSelected) {
-        setModalData(prev => ({...prev, date: dateSelected}));
-    }
+    setModalData(prev => ({...prev, date: dateSelected}));
   }, [dateSelected, showModal]);
-
 
   const futureDates = isClient ? getNextNDaysISO(3) : [];
   const reservationDates = reservations.map(r => r.date);
@@ -121,10 +102,15 @@ export default function ReceptionistDashboard() {
     setDeleteMode(false);
   }
   
-  const getDayString = (date) =>
-    new Date(date + "T00:00").toLocaleDateString("en-SG", {
+  const getDayString = (date) => {
+    // date-fns can also format this, but the native method is fine
+    const [year, month, day] = date.split('-').map(Number);
+    // Note: Months are 0-indexed in JS Dates, so month-1
+    const d = new Date(year, month - 1, day);
+    return toZonedTime(d, sgTimeZone).toLocaleDateString("en-SG", {
       year: "numeric", month: "long", day: "numeric", weekday: "long", timeZone: sgTimeZone,
     });
+  }
 
   const viewReservations = reservations.filter((r) => r.date === dateSelected);
 
