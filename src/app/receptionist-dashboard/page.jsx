@@ -1,3 +1,4 @@
+/* global Set */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,7 +7,11 @@ const totalSeats = 60;
 const restaurantName = "Big Food Restaurant, Singapore";
 const sgTimeZone = "Asia/Singapore";
 
-// This function correctly gets the date in the Singapore timezone
+// This will use the deployed URL on Netlify and localhost for local development
+const API_BASE_URL = process.env.NEXT_PUBLIC_VERCEL_URL 
+  ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` 
+  : 'http://localhost:3000';
+
 function getTodayISO() {
   const today = new Date();
   return new Date(
@@ -14,7 +19,6 @@ function getTodayISO() {
   ).toISOString().split("T")[0];
 }
 
-// NEW: Helper function to get the next N days from today in YYYY-MM-DD format
 const getNextNDaysISO = (n) => {
     const dates = [];
     const baseDate = new Date(new Date().toLocaleString("en-US", { timeZone: sgTimeZone }));
@@ -37,12 +41,12 @@ export default function ReceptionistDashboard() {
   const [deleteMode, setDeleteMode] = useState(false);
 
   const fetchReservations = async () => {
-    const response = await fetch('/api/reservations');
+    const response = await fetch(`${API_BASE_URL}/api/reservations`);
     if (response.ok) {
       const data = await response.json();
       setReservations(data);
     } else {
-      console.error("Failed to fetch reservations.");
+      console.error("Failed to fetch reservations from:", `${API_BASE_URL}/api/reservations`);
       setReservations([]);
     }
   };
@@ -55,20 +59,17 @@ export default function ReceptionistDashboard() {
     fetchReservations();
   }, []);
 
-  // --- NEW DROPDOWN LOGIC ---
   const futureDates = isClient ? getNextNDaysISO(3) : [];
   const reservationDates = reservations.map(r => r.date);
   
-  // --- THIS IS YOUR SUGGESTED FIX ---
+  // Using new Set() again, which is now declared as a global for ESLint
   const allDates = Array.from(
-    new globalThis.Set([...futureDates, ...reservationDates])
+    new Set([...futureDates, ...reservationDates])
   ).filter(Boolean).sort();
-  // --- END OF FIX ---
 
-  // The Add and Remove functions are already correct and use the API
   async function handleAddReservation(e) {
     e.preventDefault();
-    const response = await fetch('/api/reservations', {
+    const response = await fetch(`${API_BASE_URL}/api/reservations`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(modalData),
@@ -85,7 +86,7 @@ export default function ReceptionistDashboard() {
   }
 
   async function handleRemoveReservation(reservationToRemove) {
-    const response = await fetch('/api/reservations', {
+    const response = await fetch(`${API_BASE_URL}/api/reservations`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(reservationToRemove),
@@ -106,9 +107,7 @@ export default function ReceptionistDashboard() {
 
   const viewReservations = reservations.filter((r) => r.date === dateSelected);
 
-  if (!isClient) {
-    return null;
-  }
+  if (!isClient) return null;
 
   return (
     <main className="min-h-screen bg-[#18181b] text-white font-sans pb-14 receptionist-dashboard">
