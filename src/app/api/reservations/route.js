@@ -2,22 +2,32 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
-// Path to our "database"
-const filePath = path.join(process.cwd(), 'data', 'reservations.json');
+// --- CORRECTED FILE PATH ---
+// This now points to the /public directory, which is the standard place for such files.
+const filePath = path.join(process.cwd(), 'public', 'data', 'reservations.json');
 
-// Function to read reservations from the file
 const readReservations = () => {
   try {
-    const jsonData = fs.readFileSync(filePath);
-    return JSON.parse(jsonData);
+    // Specify 'utf8' encoding to read the file correctly
+    const jsonData = fs.readFileSync(filePath, 'utf8');
+    // If the file is empty, JSON.parse will fail. Return an empty array in that case.
+    return jsonData ? JSON.parse(jsonData) : [];
   } catch (error) {
-    // If the file doesn't exist, return an empty array
-    return [];
+    // If the file doesn't exist, it's not an error; it just means no reservations yet.
+    if (error.code === 'ENOENT') {
+      return [];
+    }
+    // For other errors, re-throw them
+    throw error;
   }
 };
 
-// Function to write reservations to the file
 const writeReservations = (data) => {
+  // Ensure the directory exists before writing to it.
+  const dirPath = path.dirname(filePath);
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 };
 
@@ -32,35 +42,37 @@ export async function POST(request) {
   const newReservation = await request.json();
   const allReservations = readReservations();
 
-  // --- Availability Check Logic ---
   const isSlotTaken = allReservations.some(
     (res) => res.date === newReservation.date && res.time === newReservation.time
   );
 
   if (isSlotTaken) {
-    // Return a 409 Conflict error if the time slot is already booked
     return NextResponse.json(
       { message: 'This time slot is already booked.' },
       { status: 409 }
     );
   }
-  // --- End of Availability Check ---
 
   allReservations.push(newReservation);
   writeReservations(allReservations);
 
-  // Return a 201 Created success status
   return NextResponse.json(newReservation, { status: 201 });
 }
 
 // DELETE: To remove a reservation
 export async function DELETE(request) {
-  const { name, date, time } = await request.json(); // Identify reservation to delete
+  const reservationToDelete = await request.json();
   let allReservations = readReservations();
 
   const initialLength = allReservations.length;
+
+  // --- More Specific Delete Logic ---
+  // This ensures we only delete the exact reservation that was sent.
   const updatedReservations = allReservations.filter(
-    (res) => !(res.name === name && res.date === date && res.time === time)
+    (res) => 
+      !(res.name === reservationToDelete.name && 
+        res.date === reservationToDelete.date && 
+        res.time === reservationToDelete.time)
   );
 
   if (updatedReservations.length === initialLength) {
@@ -71,7 +83,6 @@ export async function DELETE(request) {
   return NextResponse.json({ message: 'Reservation deleted.' }, { status: 200 });
 }
 
-// --- NEW ---
 // PATCH: To check for time slot availability
 export async function PATCH(request) {
   try {
@@ -82,10 +93,8 @@ export async function PATCH(request) {
       (res) => res.date === date && res.time === time
     );
 
-    // Return the availability status
     return NextResponse.json({ available: !isSlotTaken });
   } catch (error) {
-    // If the request body is malformed or missing data
     return NextResponse.json({ message: 'Invalid request body.' }, { status: 400 });
   }
 }
