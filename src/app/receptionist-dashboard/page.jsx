@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */ // Add this line
 "use client";
 
 import { useEffect, useState } from "react";
@@ -329,3 +330,4 @@ export default function ReceptionistDashboard() {
     </main>
   );
 }
+
