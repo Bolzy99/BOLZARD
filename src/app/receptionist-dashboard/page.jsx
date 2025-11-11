@@ -7,12 +7,15 @@ const totalSeats = 60;
 const restaurantName = "Big Food Restaurant, Singapore";
 const sgTimeZone = "Asia/Singapore";
 
-// Helper functions remain the same
+// --- DEBUGGING: Add logs to the date function ---
 function getTodayISO() {
+  console.log('--- getTodayISO() called ---');
   const today = new Date();
-  return new Date(
+  const todayISO = new Date(
     today.toLocaleString("en-US", { timeZone: sgTimeZone })
   ).toISOString().split("T")[0];
+  console.log('Returning date:', todayISO);
+  return todayISO;
 }
 
 const getNextNDaysISO = (n) => {
@@ -32,8 +35,13 @@ export default function ReceptionistDashboard() {
   const [modalData, setModalData] = useState({
     name: "", date: "", time: "", partySize: "", contact: "", specialRequest: "", bookedBy: "Staff",
   });
-  // --- FIX 1: Initialize dateSelected as an empty string ---
-  const [dateSelected, setDateSelected] = useState(""); 
+  
+  // --- DEBUGGING: Log the initial date ---
+  const [dateSelected, setDateSelected] = useState(() => {
+    const initialDate = getTodayISO();
+    console.log('useState initial date:', initialDate);
+    return initialDate;
+  });
   const [isClient, setIsClient] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);
 
@@ -48,19 +56,23 @@ export default function ReceptionistDashboard() {
     }
   };
 
-  // On component mount, set the date and fetch the data
   useEffect(() => {
-    // --- FIX 1 CONTINUED: Set the date only on the client ---
-    const today = getTodayISO();
-    setDateSelected(today);
+    // --- DEBUGGING: Log date on client mount ---
+    console.log('Client-side useEffect running. Today is:', getTodayISO());
+    console.log('dateSelected state on mount:', dateSelected);
+
+    // Forcefully update the date if there's a mismatch
+    const clientToday = getTodayISO();
+    if (dateSelected !== clientToday) {
+        console.log('!!! Date mismatch detected! Forcing update. !!!');
+        setDateSelected(clientToday);
+    }
     
     setIsClient(true);
     fetchReservations();
   }, []);
 
-  // --- FIX 3: Add a new useEffect to keep the modal date in sync ---
   useEffect(() => {
-    // This ensures the modal always opens with the currently selected date
     if (dateSelected) {
         setModalData(prev => ({...prev, date: dateSelected}));
     }
@@ -85,7 +97,6 @@ export default function ReceptionistDashboard() {
     if (response.ok) {
       await fetchReservations();
       setShowModal(false);
-      // --- FIX 2: Add a confirmation alert ---
       alert(`Reservation confirmed for ${modalData.name} on ${modalData.date} at ${modalData.time}!`);
       setModalData({ name: "", date: dateSelected, time: "", partySize: "", contact: "", specialRequest: "", bookedBy: "Staff" });
     } else {
@@ -103,7 +114,6 @@ export default function ReceptionistDashboard() {
 
     if (response.ok) {
         await fetchReservations();
-        // Also add a confirmation for deletion
         alert(`Successfully deleted reservation for ${reservationToRemove.name}.`);
     } else {
         alert('Failed to delete reservation.');
