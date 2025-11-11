@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */ // Add this line
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,7 +6,7 @@ const totalSeats = 60;
 const restaurantName = "Big Food Restaurant, Singapore";
 const sgTimeZone = "Asia/Singapore";
 
-// This function can remain as it's a client-side utility
+// This function correctly gets the date in the Singapore timezone
 function getTodayISO() {
   const today = new Date();
   return new Date(
@@ -15,8 +14,19 @@ function getTodayISO() {
   ).toISOString().split("T")[0];
 }
 
+// NEW: Helper function to get the next N days from today in YYYY-MM-DD format
+const getNextNDaysISO = (n) => {
+    const dates = [];
+    const baseDate = new Date(new Date().toLocaleString("en-US", { timeZone: sgTimeZone }));
+    for (let i = 0; i < n; i++) {
+        const date = new Date(baseDate);
+        date.setDate(date.getDate() + i);
+        dates.push(date.toISOString().split("T")[0]);
+    }
+    return dates;
+};
+
 export default function ReceptionistDashboard() {
-  // State now defaults to an empty array, will be filled by the API call
   const [reservations, setReservations] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({
@@ -26,7 +36,6 @@ export default function ReceptionistDashboard() {
   const [isClient, setIsClient] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);
 
-  // --- NEW: Function to fetch reservations from your API ---
   const fetchReservations = async () => {
     const response = await fetch('/api/reservations');
     if (response.ok) {
@@ -34,11 +43,10 @@ export default function ReceptionistDashboard() {
       setReservations(data);
     } else {
       console.error("Failed to fetch reservations.");
-      setReservations([]); // Set to empty array on failure
+      setReservations([]);
     }
   };
 
-  // On component mount, set the initial date and fetch data from the API
   useEffect(() => {
     const today = getTodayISO();
     setDateSelected(today);
@@ -47,13 +55,15 @@ export default function ReceptionistDashboard() {
     fetchReservations();
   }, []);
 
-  // --- THIS IS THE LINE THAT WAS CAUSING THE ERROR ---
-  // It has been corrected to use "new Set"
+  // --- NEW DROPDOWN LOGIC ---
+  // It now includes the next 3 days plus any other days with bookings.
+  const futureDates = isClient ? getNextNDaysISO(3) : []; // Today, tomorrow, day after
+  const reservationDates = reservations.map(r => r.date);
   const allDates = Array.from(
-    new Set([ ...reservations.map((r) => r.date), isClient ? getTodayISO() : "" ])
+    new Set([...futureDates, ...reservationDates])
   ).filter(Boolean).sort();
 
-  // --- UPDATED: Add a reservation via API ---
+  // The Add and Remove functions are already correct and use the API
   async function handleAddReservation(e) {
     e.preventDefault();
     const response = await fetch('/api/reservations', {
@@ -63,7 +73,7 @@ export default function ReceptionistDashboard() {
     });
 
     if (response.ok) {
-      await fetchReservations(); // Refresh the list from the server
+      await fetchReservations();
       setShowModal(false);
       setModalData({ name: "", date: dateSelected, time: "", partySize: "", contact: "", specialRequest: "", bookedBy: "Staff" });
     } else {
@@ -72,23 +82,21 @@ export default function ReceptionistDashboard() {
     }
   }
 
-  // --- UPDATED: Remove a reservation via API ---
   async function handleRemoveReservation(reservationToRemove) {
     const response = await fetch('/api/reservations', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(reservationToRemove), // Send identifier
+        body: JSON.stringify(reservationToRemove),
     });
 
     if (response.ok) {
-        await fetchReservations(); // Refresh the list from the server
+        await fetchReservations();
     } else {
         alert('Failed to delete reservation.');
     }
-    setDeleteMode(false); // Exit delete mode
+    setDeleteMode(false);
   }
-
-  // Helper functions and derived state (no changes here)
+  
   const getDayString = (date) =>
     new Date(date + "T00:00").toLocaleDateString("en-SG", {
       year: "numeric", month: "long", day: "numeric", weekday: "long", timeZone: sgTimeZone,
@@ -97,10 +105,9 @@ export default function ReceptionistDashboard() {
   const viewReservations = reservations.filter((r) => r.date === dateSelected);
 
   if (!isClient) {
-    return null; // Prevents hydration errors
+    return null;
   }
 
-  // --- The JSX remains exactly the same ---
   return (
     <main className="min-h-screen bg-[#18181b] text-white font-sans pb-14 receptionist-dashboard">
       {/* Header Banner */}
@@ -119,8 +126,9 @@ export default function ReceptionistDashboard() {
             <span className="hidden md:inline">| </span>
             <span>Date:</span>
             <div className="inline-block relative ml-2">
+              {/* --- NEW STYLING FOR DROPDOWN --- */}
               <select
-                className="appearance-none bg-white/25 rounded-lg px-2 py-1 pr-8"
+                className="appearance-none bg-white/20 rounded-xl px-4 py-2 pr-8 border border-white/30 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all cursor-pointer"
                 value={dateSelected}
                 onChange={(e) => setDateSelected(e.target.value)}
               >
