@@ -18,7 +18,7 @@ function getTodayISO() {
   return format(zonedDate, 'yyyy-MM-dd');
 }
 
-// --- MODIFIED: Removed unused function to clear build warning ---
+// This function is unused and can be removed
 // const getNextNDaysISO = (n) => { ... };
 
 export default function ReceptionistDashboard() {
@@ -63,8 +63,9 @@ export default function ReceptionistDashboard() {
   }, [calendarRef]);
 
   useEffect(() => {
+    // Only update the modal's date when the main dateSelected changes
     setModalData(prev => ({...prev, date: dateSelected}));
-  }, [dateSelected, showModal]);
+  }, [dateSelected]);
 
   const reservationDatesWithBookings = new Set(reservations.map(r => r.date));
   
@@ -347,7 +348,7 @@ export default function ReceptionistDashboard() {
               onChange={e => setModalData({ ...modalData, name: e.target.value })}
             />
             {/* --- MODIFIED: Aligned date and time inputs --- */}
-            <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex flex-col gap-4">
               <input
                 type="date"
                 className="w-full p-3 border rounded-lg bg-gray-100"
