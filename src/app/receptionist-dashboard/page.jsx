@@ -1,7 +1,7 @@
 /* global Set */
 "use client";
 
-import { useEffect, useState, useRef } from "react"; // --- MODIFIED: Imported useRef
+import { useEffect, useState, useRef } from "react";
 import { format } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import { DayPicker } from 'react-day-picker';
@@ -42,8 +42,6 @@ export default function ReceptionistDashboard() {
   const [isClient, setIsClient] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
-  
-  // --- NEW: Refs to handle clicking outside the calendar to close it ---
   const calendarRef = useRef(null);
 
   const fetchReservations = async () => {
@@ -62,7 +60,6 @@ export default function ReceptionistDashboard() {
     setIsClient(true);
   }, []);
   
-  // --- NEW: Effect to handle clicks outside the calendar ---
   useEffect(() => {
     function handleClickOutside(event) {
       if (calendarRef.current && !calendarRef.current.contains(event.target)) {
@@ -152,7 +149,6 @@ export default function ReceptionistDashboard() {
           <span>
             <span className="hidden md:inline">| </span>
             <span>Date:</span>
-            {/* --- MODIFIED: This entire div is now the calendar button and popup --- */}
             <div className="inline-block relative ml-2" ref={calendarRef}>
               <button
                 onClick={() => setShowCalendar(!showCalendar)}
@@ -161,7 +157,6 @@ export default function ReceptionistDashboard() {
                 {getDayString(dateSelected)}
               </button>
               {showCalendar && (
-                // --- MODIFIED: Added classes for positioning ---
                 <div className="absolute top-full mt-2 z-50 left-1/2 -translate-x-1/2">
                   <DayPicker
                     mode="single"
@@ -173,7 +168,7 @@ export default function ReceptionistDashboard() {
                     modifiersClassNames={{
                       hasReservation: 'has-reservation'
                     }}
-                    className="bg-[#27272a] text-white rounded-lg shadow-2xl border border-white/10 p-4"
+                    className="bg-[#27272a] text-white rounded-lg shadow-2xl border border-white/10 p-2"
                   />
                 </div>
               )}
@@ -186,52 +181,68 @@ export default function ReceptionistDashboard() {
         </div>
       </div>
 
-      {/* --- MODIFIED: Overhauled the style block for a professional UI --- */}
+      {/* --- MODIFIED: Final professional UI styles --- */}
       <style jsx global>{`
         :root {
             --rdp-cell-size: 40px;
             --rdp-accent-color: #db2777; /* pink-600 */
             --rdp-background-color: rgba(219, 39, 119, 0.1);
-            --rdp-accent-color-dark: #be185d;
-            --rdp-background-color-dark: #86198f;
-            --rdp-outline: 2px solid var(--rdp-accent-color);
-            --rdp-font-family: inherit; /* Use the same font as the page */
+            --rdp-font-family: inherit;
         }
         .rdp-caption_label {
             font-weight: 600 !important;
-            font-size: 1.1rem !important;
+            font-size: 1rem !important;
+            color: #f4f4f5; /* zinc-100 */
         }
         .rdp-nav_button {
-            color: #a1a1aa; /* gray-400 */
+            color: #a1a1aa; /* zinc-400 */
             transition: color 0.2s;
         }
         .rdp-nav_button:hover {
             color: #fff;
         }
         .has-reservation {
-            background-color: rgba(236, 72, 153, 0.2); /* Subtle pink background */
+            position: relative;
+        }
+        /* The elegant dot marker for dates with reservations */
+        .has-reservation::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
             border-radius: 50%;
-            font-weight: 600;
-            color: #fce7f3; /* light pink text */
+            background-color: #10b981; /* Vibrant green */
         }
-        .rdp-day_today {
-            font-weight: bold;
-            color: #f472b6; /* pink-400 */
-        }
-        .rdp-day_selected, .rdp-day_selected:focus, .rdp-day_selected:hover {
-            background-color: #db2777 !important;
+        /* --- MODIFIED: Green Square for Today's Date --- */
+        .rdp-day_today:not(.rdp-day_selected) {
+            background-color: #10b981 !important; /* Solid green background */
             color: #fff !important;
             font-weight: bold;
-            border-radius: 50%;
+            border-radius: 0.375rem !important; /* Rounded square */
+        }
+        /* --- MODIFIED: Ensure text is visible if today is ALSO selected --- */
+         .rdp-day_today.rdp-day_selected {
+            color: #fff !important;
+         }
+        /* --- MODIFIED: Rounded square for selected date --- */
+        .rdp-day_selected, .rdp-day_selected:focus, .rdp-day_selected:hover {
+            background-color: #db2777 !important; /* pink-600 */
+            color: #fff !important;
+            font-weight: bold;
+            border-radius: 0.375rem !important; /* Rounded square */
         }
         .rdp-head_cell {
-            color: #a1a1aa; /* gray-400 */
+            color: #a1a1aa; /* zinc-400 */
             font-size: 0.8rem;
             font-weight: 500;
         }
+        /* --- MODIFIED: Rounded square for hover effect --- */
         .rdp-day:hover:not(.rdp-day_selected) {
             background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
+            border-radius: 0.375rem;
         }
       `}</style>
       
