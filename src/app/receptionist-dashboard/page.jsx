@@ -18,13 +18,9 @@ function getTodayISO() {
   return format(zonedDate, 'yyyy-MM-dd');
 }
 
-// This function is unused and can be removed
-// const getNextNDaysISO = (n) => { ... };
-
 export default function ReceptionistDashboard() {
   const [reservations, setReservations] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  // --- MODIFIED: Removed bookedBy from initial state ---
   const [modalData, setModalData] = useState({
     name: "", date: "", time: "", partySize: "", contact: "", specialRequest: "",
   });
@@ -63,7 +59,6 @@ export default function ReceptionistDashboard() {
   }, [calendarRef]);
 
   useEffect(() => {
-    // Only update the modal's date when the main dateSelected changes
     setModalData(prev => ({...prev, date: dateSelected}));
   }, [dateSelected]);
 
@@ -78,7 +73,6 @@ export default function ReceptionistDashboard() {
 
   async function handleAddReservation(e) {
     e.preventDefault();
-    // --- MODIFIED: Hardcode the 'bookedBy' field here ---
     const finalModalData = { ...modalData, bookedBy: "Staff" };
 
     const response = await fetch('/api/reservations', { 
@@ -91,7 +85,6 @@ export default function ReceptionistDashboard() {
       await fetchReservations();
       setShowModal(false);
       alert(`Reservation confirmed for ${finalModalData.name} on ${finalModalData.date} at ${finalModalData.time}!`);
-      // --- MODIFIED: Reset form correctly without bookedBy ---
       setModalData({ name: "", date: dateSelected, time: "", partySize: "", contact: "", specialRequest: "" });
     } else {
       const error = await response.json();
@@ -233,6 +226,26 @@ export default function ReceptionistDashboard() {
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 0.375rem;
         }
+
+        /* ✅ Fix mobile alignment for date/time inputs */
+        input[type="date"],
+        input[type="time"] {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 100% !important;
+          box-sizing: border-box;
+          background-color: #f3f4f6;
+          border: 1px solid #d1d5db;
+          border-radius: 0.5rem;
+          padding: 0.75rem;
+          font-size: 1rem;
+        }
+
+        @media (max-width: 640px) {
+          .sm\\:flex-row {
+            flex-direction: column !important;
+          }
+        }
       `}</style>
       
       <section className="max-w-5xl mx-auto bg-white/10 mt-8 rounded-2xl shadow-lg overflow-x-auto p-4 md:p-8">
@@ -251,7 +264,6 @@ export default function ReceptionistDashboard() {
             >
               {deleteMode ? "Cancel" : "Remove Reservation"}
             </button>
-            {/* --- MODIFIED: Set default time and date on modal open --- */}
             <button
               className="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-xl font-semibold shadow transition outline-none"
               onClick={() => {
@@ -347,7 +359,6 @@ export default function ReceptionistDashboard() {
               value={modalData.name}
               onChange={e => setModalData({ ...modalData, name: e.target.value })}
             />
-            {/* --- MODIFIED: Aligned date and time inputs --- */}
             <div className="flex flex-col gap-4">
               <input
                 type="date"
@@ -387,7 +398,6 @@ export default function ReceptionistDashboard() {
               value={modalData.specialRequest}
               onChange={e => setModalData({ ...modalData, specialRequest: e.target.value })}
             />
-            {/* --- MODIFIED: 'Booked By' section is removed from the form --- */}
             <button
               type="submit"
               className="w-full mt-4 bg-pink-700 hover:bg-pink-800 text-white rounded-lg p-3 font-bold shadow-lg"
