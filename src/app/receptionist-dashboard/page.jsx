@@ -2,28 +2,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
-// --- FIX: Import the new date/timezone libraries ---
 import { format } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
+// --- NEW: Import the calendar component and its CSS ---
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/dist/style.css';
+
 
 const totalSeats = 60;
 const restaurantName = "Big Food Restaurant, Singapore";
 const sgTimeZone = "Asia/Singapore";
 
-// --- FIX: A much more reliable way to get the current date ---
+// This function remains the same
 function getTodayISO() {
   const now = new Date();
   const zonedDate = toZonedTime(now, sgTimeZone);
   return format(zonedDate, 'yyyy-MM-dd');
 }
 
+// This function remains the same
 const getNextNDaysISO = (n) => {
     const dates = [];
-    const baseDate = toZonedTime(new Date(), sgTimeZone); // Use the zoned time as the base
+    const baseDate = toZonedTime(new Date(), sgTimeZone);
     for (let i = 0; i < n; i++) {
         const date = new Date(baseDate);
         date.setDate(date.getDate() + i);
-        // We can use the same toZonedTime again to be safe, though setDate should be okay
         const zonedDate = toZonedTime(date, sgTimeZone);
         dates.push(format(zonedDate, 'yyyy-MM-dd'));
     }
@@ -36,9 +39,11 @@ export default function ReceptionistDashboard() {
   const [modalData, setModalData] = useState({
     name: "", date: "", time: "", partySize: "", contact: "", specialRequest: "", bookedBy: "Staff",
   });
-  const [dateSelected, setDateSelected] = useState(getTodayISO()); // This will now be correct
+  const [dateSelected, setDateSelected] = useState(getTodayISO());
   const [isClient, setIsClient] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);
+  // --- NEW: State to control the calendar's visibility ---
+  const [showCalendar, setShowCalendar] = useState(false);
 
   const fetchReservations = async () => {
     const response = await fetch('/api/reservations'); 
@@ -60,12 +65,14 @@ export default function ReceptionistDashboard() {
     setModalData(prev => ({...prev, date: dateSelected}));
   }, [dateSelected, showModal]);
 
-  const futureDates = isClient ? getNextNDaysISO(3) : [];
-  const reservationDates = reservations.map(r => r.date);
+  // --- MODIFIED: Get a unique set of dates that have reservations ---
+  const reservationDatesWithBookings = new Set(reservations.map(r => r.date));
   
-  const allDates = Array.from(
-    new Set([...futureDates, ...reservationDates, dateSelected])
-  ).filter(Boolean).sort();
+  const handleDayClick = (day) => {
+    const selectedDate = format(day, 'yyyy-MM-dd');
+    setDateSelected(selectedDate);
+    setShowCalendar(false); // Close the calendar after selecting a day
+  };
 
   async function handleAddReservation(e) {
     e.preventDefault();
@@ -103,9 +110,8 @@ export default function ReceptionistDashboard() {
   }
   
   const getDayString = (date) => {
-    // date-fns can also format this, but the native method is fine
+    if (!date) return ""; // Guard against undefined date
     const [year, month, day] = date.split('-').map(Number);
-    // Note: Months are 0-indexed in JS Dates, so month-1
     const d = new Date(year, month - 1, day);
     return toZonedTime(d, sgTimeZone).toLocaleDateString("en-SG", {
       year: "numeric", month: "long", day: "numeric", weekday: "long", timeZone: sgTimeZone,
@@ -132,21 +138,29 @@ export default function ReceptionistDashboard() {
           <span>
             <span className="hidden md:inline">| </span>
             <span>Date:</span>
+            {/* --- MODIFIED: This entire div is now the calendar button and popup --- */}
             <div className="inline-block relative ml-2">
-              <select
-                className="appearance-none bg-white/20 rounded-xl px-4 py-2 pr-8 border border-white/30 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all cursor-pointer"
-                value={dateSelected}
-                onChange={(e) => setDateSelected(e.target.value)}
+              <button
+                onClick={() => setShowCalendar(!showCalendar)}
+                className="appearance-none bg-white/20 rounded-xl px-4 py-2 border border-white/30 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all cursor-pointer"
               >
-                {allDates.map((dt) => (
-                  <option value={dt} key={dt} className="text-black">
-                    {getDayString(dt)}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.516 7.548l4.484 4.484 4.484-4.484L16 9l-6 6-6-6z"/></svg>
-              </div>
+                {getDayString(dateSelected)}
+              </button>
+              {showCalendar && (
+                <div className="absolute top-full mt-2 z-50 bg-gray-800 text-white rounded-lg shadow-lg border border-white/10">
+                  <DayPicker
+                    mode="single"
+                    selected={new Date(dateSelected + 'T00:00')}
+                    onSelect={handleDayClick}
+                    modifiers={{
+                      hasReservation: Array.from(reservationDatesWithBookings).map(dateStr => new Date(dateStr + 'T00:00'))
+                    }}
+                    modifiersClassNames={{
+                      hasReservation: 'has-reservation'
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </span>
           <span>
@@ -156,6 +170,29 @@ export default function ReceptionistDashboard() {
         </div>
       </div>
 
+      {/* --- NEW: Style block for the calendar --- */}
+      <style jsx global>{`
+        .rdp {
+            --rdp-cell-size: 40px;
+            --rdp-caption-font-size: 1rem;
+            --rdp-accent-color: #ec4899; /* pink-500 */
+            --rdp-background-color: #f9a8d4; /* pink-200 */
+            --rdp-accent-color-dark: #be185d; /* pink-700 */
+            --rdp-background-color-dark: #86198f; /* purple-800 */
+            --rdp-outline: 2px solid var(--rdp-accent-color);
+        }
+        .has-reservation {
+          font-weight: bold;
+          color: #f9a8d4; /* A lighter pink to show up on the dark background */
+          border: 1px solid #ec4899;
+          border-radius: 50%;
+        }
+        .rdp-day_selected, .rdp-day_selected:hover {
+            background-color: #db2777 !important;
+            color: #fff !important;
+        }
+      `}</style>
+      
       <section className="max-w-5xl mx-auto bg-white/10 mt-8 rounded-2xl shadow-lg overflow-x-auto p-4 md:p-8">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <h2 className="text-2xl font-semibold text-center sm:text-left flex-shrink-0">
