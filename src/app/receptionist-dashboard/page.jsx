@@ -1,10 +1,9 @@
 /* global Set */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react"; // --- MODIFIED: Imported useRef
 import { format } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
-// --- NEW: Import the calendar component and its CSS ---
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 
@@ -42,8 +41,10 @@ export default function ReceptionistDashboard() {
   const [dateSelected, setDateSelected] = useState(getTodayISO());
   const [isClient, setIsClient] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);
-  // --- NEW: State to control the calendar's visibility ---
   const [showCalendar, setShowCalendar] = useState(false);
+  
+  // --- NEW: Refs to handle clicking outside the calendar to close it ---
+  const calendarRef = useRef(null);
 
   const fetchReservations = async () => {
     const response = await fetch('/api/reservations'); 
@@ -60,18 +61,31 @@ export default function ReceptionistDashboard() {
     fetchReservations();
     setIsClient(true);
   }, []);
+  
+  // --- NEW: Effect to handle clicks outside the calendar ---
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setShowCalendar(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [calendarRef]);
 
   useEffect(() => {
     setModalData(prev => ({...prev, date: dateSelected}));
   }, [dateSelected, showModal]);
 
-  // --- MODIFIED: Get a unique set of dates that have reservations ---
   const reservationDatesWithBookings = new Set(reservations.map(r => r.date));
   
   const handleDayClick = (day) => {
+    if(!day) return;
     const selectedDate = format(day, 'yyyy-MM-dd');
     setDateSelected(selectedDate);
-    setShowCalendar(false); // Close the calendar after selecting a day
+    setShowCalendar(false);
   };
 
   async function handleAddReservation(e) {
@@ -110,7 +124,7 @@ export default function ReceptionistDashboard() {
   }
   
   const getDayString = (date) => {
-    if (!date) return ""; // Guard against undefined date
+    if (!date) return "";
     const [year, month, day] = date.split('-').map(Number);
     const d = new Date(year, month - 1, day);
     return toZonedTime(d, sgTimeZone).toLocaleDateString("en-SG", {
@@ -139,7 +153,7 @@ export default function ReceptionistDashboard() {
             <span className="hidden md:inline">| </span>
             <span>Date:</span>
             {/* --- MODIFIED: This entire div is now the calendar button and popup --- */}
-            <div className="inline-block relative ml-2">
+            <div className="inline-block relative ml-2" ref={calendarRef}>
               <button
                 onClick={() => setShowCalendar(!showCalendar)}
                 className="appearance-none bg-white/20 rounded-xl px-4 py-2 border border-white/30 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all cursor-pointer"
@@ -147,7 +161,8 @@ export default function ReceptionistDashboard() {
                 {getDayString(dateSelected)}
               </button>
               {showCalendar && (
-                <div className="absolute top-full mt-2 z-50 bg-gray-800 text-white rounded-lg shadow-lg border border-white/10">
+                // --- MODIFIED: Added classes for positioning ---
+                <div className="absolute top-full mt-2 z-50 left-1/2 -translate-x-1/2">
                   <DayPicker
                     mode="single"
                     selected={new Date(dateSelected + 'T00:00')}
@@ -158,6 +173,7 @@ export default function ReceptionistDashboard() {
                     modifiersClassNames={{
                       hasReservation: 'has-reservation'
                     }}
+                    className="bg-[#27272a] text-white rounded-lg shadow-2xl border border-white/10 p-4"
                   />
                 </div>
               )}
@@ -170,26 +186,52 @@ export default function ReceptionistDashboard() {
         </div>
       </div>
 
-      {/* --- NEW: Style block for the calendar --- */}
+      {/* --- MODIFIED: Overhauled the style block for a professional UI --- */}
       <style jsx global>{`
-        .rdp {
+        :root {
             --rdp-cell-size: 40px;
-            --rdp-caption-font-size: 1rem;
-            --rdp-accent-color: #ec4899; /* pink-500 */
-            --rdp-background-color: #f9a8d4; /* pink-200 */
-            --rdp-accent-color-dark: #be185d; /* pink-700 */
-            --rdp-background-color-dark: #86198f; /* purple-800 */
+            --rdp-accent-color: #db2777; /* pink-600 */
+            --rdp-background-color: rgba(219, 39, 119, 0.1);
+            --rdp-accent-color-dark: #be185d;
+            --rdp-background-color-dark: #86198f;
             --rdp-outline: 2px solid var(--rdp-accent-color);
+            --rdp-font-family: inherit; /* Use the same font as the page */
+        }
+        .rdp-caption_label {
+            font-weight: 600 !important;
+            font-size: 1.1rem !important;
+        }
+        .rdp-nav_button {
+            color: #a1a1aa; /* gray-400 */
+            transition: color 0.2s;
+        }
+        .rdp-nav_button:hover {
+            color: #fff;
         }
         .has-reservation {
-          font-weight: bold;
-          color: #f9a8d4; /* A lighter pink to show up on the dark background */
-          border: 1px solid #ec4899;
-          border-radius: 50%;
+            background-color: rgba(236, 72, 153, 0.2); /* Subtle pink background */
+            border-radius: 50%;
+            font-weight: 600;
+            color: #fce7f3; /* light pink text */
         }
-        .rdp-day_selected, .rdp-day_selected:hover {
+        .rdp-day_today {
+            font-weight: bold;
+            color: #f472b6; /* pink-400 */
+        }
+        .rdp-day_selected, .rdp-day_selected:focus, .rdp-day_selected:hover {
             background-color: #db2777 !important;
             color: #fff !important;
+            font-weight: bold;
+            border-radius: 50%;
+        }
+        .rdp-head_cell {
+            color: #a1a1aa; /* gray-400 */
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .rdp-day:hover:not(.rdp-day_selected) {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
         }
       `}</style>
       
