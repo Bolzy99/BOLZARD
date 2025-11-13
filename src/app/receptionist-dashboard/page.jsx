@@ -7,7 +7,6 @@ import { toZonedTime } from 'date-fns-tz';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 
-
 const totalSeats = 60;
 const restaurantName = "Big Food Restaurant, Singapore";
 const sgTimeZone = "Asia/Singapore";
@@ -19,24 +18,15 @@ function getTodayISO() {
   return format(zonedDate, 'yyyy-MM-dd');
 }
 
-// This function remains the same
-const getNextNDaysISO = (n) => {
-    const dates = [];
-    const baseDate = toZonedTime(new Date(), sgTimeZone);
-    for (let i = 0; i < n; i++) {
-        const date = new Date(baseDate);
-        date.setDate(date.getDate() + i);
-        const zonedDate = toZonedTime(date, sgTimeZone);
-        dates.push(format(zonedDate, 'yyyy-MM-dd'));
-    }
-    return dates;
-};
+// --- MODIFIED: Removed unused function to clear build warning ---
+// const getNextNDaysISO = (n) => { ... };
 
 export default function ReceptionistDashboard() {
   const [reservations, setReservations] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  // --- MODIFIED: Removed bookedBy from initial state ---
   const [modalData, setModalData] = useState({
-    name: "", date: "", time: "", partySize: "", contact: "", specialRequest: "", bookedBy: "Staff",
+    name: "", date: "", time: "", partySize: "", contact: "", specialRequest: "",
   });
   const [dateSelected, setDateSelected] = useState(getTodayISO());
   const [isClient, setIsClient] = useState(false);
@@ -87,17 +77,21 @@ export default function ReceptionistDashboard() {
 
   async function handleAddReservation(e) {
     e.preventDefault();
+    // --- MODIFIED: Hardcode the 'bookedBy' field here ---
+    const finalModalData = { ...modalData, bookedBy: "Staff" };
+
     const response = await fetch('/api/reservations', { 
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(modalData),
+      body: JSON.stringify(finalModalData),
     });
 
     if (response.ok) {
       await fetchReservations();
       setShowModal(false);
-      alert(`Reservation confirmed for ${modalData.name} on ${modalData.date} at ${modalData.time}!`);
-      setModalData({ name: "", date: dateSelected, time: "", partySize: "", contact: "", specialRequest: "", bookedBy: "Staff" });
+      alert(`Reservation confirmed for ${finalModalData.name} on ${finalModalData.date} at ${finalModalData.time}!`);
+      // --- MODIFIED: Reset form correctly without bookedBy ---
+      setModalData({ name: "", date: dateSelected, time: "", partySize: "", contact: "", specialRequest: "" });
     } else {
       const error = await response.json();
       alert(`Failed to add reservation: ${error.message}`);
@@ -181,7 +175,6 @@ export default function ReceptionistDashboard() {
         </div>
       </div>
 
-      {/* --- MODIFIED: Final professional UI styles --- */}
       <style jsx global>{`
         :root {
             --rdp-cell-size: 40px;
@@ -204,7 +197,6 @@ export default function ReceptionistDashboard() {
         .has-reservation {
             position: relative;
         }
-        /* The elegant dot marker for dates with reservations */
         .has-reservation::after {
             content: '';
             position: absolute;
@@ -216,30 +208,26 @@ export default function ReceptionistDashboard() {
             border-radius: 50%;
             background-color: #10b981; /* Vibrant green */
         }
-        /* --- MODIFIED: Green Square for Today's Date --- */
         .rdp-day_today:not(.rdp-day_selected) {
-            background-color: #10b981 !important; /* Solid green background */
+            background-color: #10b981 !important;
             color: #fff !important;
             font-weight: bold;
-            border-radius: 0.375rem !important; /* Rounded square */
+            border-radius: 0.375rem !important;
         }
-        /* --- MODIFIED: Ensure text is visible if today is ALSO selected --- */
-         .rdp-day_today.rdp-day_selected {
-            color: #fff !important;
-         }
-        /* --- MODIFIED: Rounded square for selected date --- */
+        .rdp-day_today.rdp-day_selected {
+           color: #fff !important;
+        }
         .rdp-day_selected, .rdp-day_selected:focus, .rdp-day_selected:hover {
-            background-color: #db2777 !important; /* pink-600 */
+            background-color: #db2777 !important;
             color: #fff !important;
             font-weight: bold;
-            border-radius: 0.375rem !important; /* Rounded square */
+            border-radius: 0.375rem !important;
         }
         .rdp-head_cell {
             color: #a1a1aa; /* zinc-400 */
             font-size: 0.8rem;
             font-weight: 500;
         }
-        /* --- MODIFIED: Rounded square for hover effect --- */
         .rdp-day:hover:not(.rdp-day_selected) {
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 0.375rem;
@@ -262,9 +250,13 @@ export default function ReceptionistDashboard() {
             >
               {deleteMode ? "Cancel" : "Remove Reservation"}
             </button>
+            {/* --- MODIFIED: Set default time and date on modal open --- */}
             <button
               className="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-xl font-semibold shadow transition outline-none"
-              onClick={() => setShowModal(true)}
+              onClick={() => {
+                setModalData(prev => ({...prev, date: dateSelected, time: "19:00"}));
+                setShowModal(true);
+              }}
             >
               + Add Reservation
             </button>
@@ -332,9 +324,9 @@ export default function ReceptionistDashboard() {
       </section>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black/60 z-40 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-4">
           <form
-            className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md space-y-3 text-black relative"
+            className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md space-y-4 text-black relative"
             onSubmit={handleAddReservation}
             autoComplete="off"
           >
@@ -348,16 +340,17 @@ export default function ReceptionistDashboard() {
             </button>
             <h3 className="text-xl font-bold mb-2 text-center">Add Reservation</h3>
             <input
-              className="w-full p-2 border rounded-lg bg-gray-100 mb-2"
+              className="w-full p-3 border rounded-lg bg-gray-100"
               placeholder="Customer Name"
               required
               value={modalData.name}
               onChange={e => setModalData({ ...modalData, name: e.target.value })}
             />
-            <div className="flex flex-col md:flex-row gap-2">
+            {/* --- MODIFIED: Aligned date and time inputs --- */}
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="date"
-                className="w-full md:w-1/2 p-2 border rounded-lg bg-gray-100"
+                className="w-full p-3 border rounded-lg bg-gray-100"
                 value={modalData.date}
                 min={isClient ? getTodayISO() : ''}
                 onChange={e => setModalData({ ...modalData, date: e.target.value })}
@@ -365,14 +358,14 @@ export default function ReceptionistDashboard() {
               />
               <input
                 type="time"
-                className="w-full md:w-1/2 p-2 border rounded-lg bg-gray-100"
+                className="w-full p-3 border rounded-lg bg-gray-100"
                 value={modalData.time}
                 onChange={e => setModalData({ ...modalData, time: e.target.value })}
                 required
               />
             </div>
             <input
-              className="w-full p-2 border rounded-lg bg-gray-100 mb-2"
+              className="w-full p-3 border rounded-lg bg-gray-100"
               placeholder="Number of People"
               type="number"
               min={1}
@@ -381,34 +374,22 @@ export default function ReceptionistDashboard() {
               required
             />
             <input
-              className="w-full p-2 border rounded-lg bg-gray-100 mb-2"
+              className="w-full p-3 border rounded-lg bg-gray-100"
               placeholder="Contact Number"
               required
               value={modalData.contact}
               onChange={e => setModalData({ ...modalData, contact: e.target.value })}
             />
             <input
-              className="w-full p-2 border rounded-lg bg-gray-100 mb-2"
+              className="w-full p-3 border rounded-lg bg-gray-100"
               placeholder="Special Request (optional)"
               value={modalData.specialRequest}
               onChange={e => setModalData({ ...modalData, specialRequest: e.target.value })}
             />
-            <div className="mt-2 flex items-center gap-2">
-              <span className="font-semibold text-gray-600">Booked By:</span>
-              <select
-                className="border rounded px-2 py-1"
-                value={modalData.bookedBy}
-                onChange={e =>
-                  setModalData({ ...modalData, bookedBy: e.target.value })
-                }
-              >
-                <option>Staff</option>
-                <option>AI Receptionist</option>
-              </select>
-            </div>
+            {/* --- MODIFIED: 'Booked By' section is removed from the form --- */}
             <button
               type="submit"
-              className="w-full mt-3 bg-pink-700 hover:bg-pink-800 text-white rounded-lg p-2 font-bold shadow"
+              className="w-full mt-4 bg-pink-700 hover:bg-pink-800 text-white rounded-lg p-3 font-bold shadow-lg"
             >
               Confirm Reservation
             </button>
