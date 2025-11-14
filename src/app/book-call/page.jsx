@@ -20,7 +20,7 @@ const BookCallPage = () => {
           {/* --- Calendly Widget --- */}
           <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
             <InlineWidget 
-              url="https://calendly.com/bolzard/30min" // Remember to replace with your actual Calendly link
+              url="https://calendly.com/bolzard/45min"
               styles={{
                 height: '800px'
               }}
