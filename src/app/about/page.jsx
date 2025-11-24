@@ -42,7 +42,7 @@ const AboutPage = () => {
               {/* Name and Role */}
               <div className="text-center mb-6">
                 <h2 className="text-4xl font-bold text-white">Yash</h2>
-                <p className="text-lg text-cyan-400 font-medium">Founder</p>
+                <p className="text-lg text-cyan-400 font-medium">Founder & Chief Architect of Automation</p>
               </div>
 
               {/* Bio */}
