@@ -9,7 +9,9 @@ export default function ConditionalLayout({ children }) {
   const pathname = usePathname();
   const hideLayout = [
     "/demo-receptionist",
-    "/receptionist-dashboard"     // <-- Add this line!
+    "/receptionist-dashboard",
+    "/dentist-dashboard",
+    "/demo-dentist"
   ].includes(pathname);
 
   return (
