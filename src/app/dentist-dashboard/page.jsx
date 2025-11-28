@@ -7,7 +7,7 @@ import { toZonedTime } from 'date-fns-tz';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 
-const totalChairs = 4; // Dentist chairs instead of seats
+const totalChairs = 4;
 const clinicName = "Smile Dental Clinic, Singapore";
 const sgTimeZone = "Asia/Singapore";
 
@@ -20,8 +20,9 @@ function getTodayISO() {
 export default function DentistDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  // --- MODIFIED: Removed 'notes' from state ---
   const [modalData, setModalData] = useState({
-    name: "", date: "", time: "", service: "", contact: "", notes: "",
+    name: "", date: "", time: "", service: "", contact: "",
   });
   const [dateSelected, setDateSelected] = useState(getTodayISO());
   const [isClient, setIsClient] = useState(false);
@@ -72,6 +73,7 @@ export default function DentistDashboard() {
 
   async function handleAddAppointment(e) {
     e.preventDefault();
+    // --- MODIFIED: 'notes' is no longer included ---
     const finalModalData = { ...modalData, bookedBy: "Staff" };
 
     const response = await fetch('/api/appointments', { 
@@ -84,7 +86,8 @@ export default function DentistDashboard() {
       await fetchAppointments();
       setShowModal(false);
       alert(`Appointment confirmed for ${finalModalData.name} on ${finalModalData.date} at ${finalModalData.time}!`);
-      setModalData({ name: "", date: dateSelected, time: "", service: "", contact: "", notes: "" });
+      // --- MODIFIED: Removed 'notes' from reset ---
+      setModalData({ name: "", date: dateSelected, time: "", service: "", contact: "" });
     } else {
       const error = await response.json();
       alert(`Failed to add appointment: ${error.message}`);
@@ -263,14 +266,15 @@ export default function DentistDashboard() {
                 <th className="py-2 px-3">Time</th>
                 <th className="py-2 px-3">Service</th>
                 <th className="py-2 px-3">Contact</th>
-                <th className="py-2 px-3">Notes</th>
+                {/* --- MODIFIED: Removed Notes header --- */}
                 <th className="py-2 px-3 rounded-r-xl">Booked By</th>
               </tr>
             </thead>
             <tbody>
               {viewAppointments.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="text-center text-gray-300 py-4">
+                  {/* --- MODIFIED: Adjusted colSpan --- */}
+                  <td colSpan={6} className="text-center text-gray-300 py-4">
                     No appointments for this day.
                   </td>
                 </tr>
@@ -294,7 +298,7 @@ export default function DentistDashboard() {
                   <td className="py-2 px-3">{apt.time}</td>
                   <td className="py-2 px-3">{apt.service}</td>
                   <td className="py-2 px-3">{apt.contact}</td>
-                  <td className="py-2 px-3">{apt.notes || "-"}</td>
+                  {/* --- MODIFIED: Removed Notes data cell --- */}
                   <td className="py-2 px-3 rounded-r-xl">{apt.bookedBy}</td>
                 </tr>
               ))}
@@ -377,12 +381,7 @@ export default function DentistDashboard() {
               value={modalData.contact}
               onChange={e => setModalData({ ...modalData, contact: e.target.value })}
             />
-            <input
-              className="w-full p-3 border rounded-lg bg-gray-100"
-              placeholder="Notes (optional)"
-              value={modalData.notes}
-              onChange={e => setModalData({ ...modalData, notes: e.target.value })}
-            />
+            {/* --- MODIFIED: Removed Notes input field --- */}
             <button
               type="submit"
               className="w-full mt-4 bg-cyan-700 hover:bg-cyan-800 text-white rounded-lg p-3 font-bold shadow-lg"
