@@ -16,7 +16,7 @@ export async function GET() {
 
 // POST: Create a new appointment
 export async function POST(request) {
-  const { name, date, time, service, contact, notes, bookedBy } = await request.json();
+  const { name, date, time, service, contact, bookedBy } = await request.json();
 
   // Check for availability
   const { data: existing, error: checkError } = await supabase
@@ -36,7 +36,7 @@ export async function POST(request) {
   // Insert the new appointment
   const { error: insertError } = await supabase
     .from('appointments')
-    .insert([{ name, date, time, service, contact, notes, bookedBy }]);
+    .insert([{ name, date, time, service, contact, bookedBy }]);
 
   if (insertError) {
     return NextResponse.json({ error: insertError.message }, { status: 500 });
@@ -81,3 +81,4 @@ export async function PATCH(request) {
 
   return NextResponse.json({ available: data.length === 0 });
 }
+
