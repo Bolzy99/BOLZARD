@@ -29,7 +29,7 @@ export default function DemoDentist() {
       {/* The ElevenLabs Widget */}
       {/* Positioned absolutely in the center */}
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
-        <elevenlabs-convai agent-id="YOUR_DENTIST_AGENT_ID"></elevenlabs-convai>
+        <elevenlabs-convai agent-id="agent_4801kb5mszk7f7f94jnw26max7va"></elevenlabs-convai>
       </div>
 
       {/* Required Script for the Widget */}
@@ -42,3 +42,4 @@ export default function DemoDentist() {
     </>
   );
 }
+
