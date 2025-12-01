@@ -7,13 +7,7 @@ import ParticleBackground from "./ParticleBackground";
 
 export default function ConditionalLayout({ children }) {
   const pathname = usePathname();
-  const hideLayout = [
-    "/demo-receptionist",
-    "/receptionist-dashboard",
-    "/dentist-dashboard",
-    "/demo-dentist"
-  ].includes(pathname);
-
+  const hideLayout = pathname?.startsWith("/demos");
   return (
     <>
       {!hideLayout && <ParticleBackground />}
