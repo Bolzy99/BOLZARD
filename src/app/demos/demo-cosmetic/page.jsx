@@ -35,7 +35,6 @@ export default function DemoCosmetic() {
         ></elevenlabs-convai>
       </main>
 
-      {/* Required Script - Changed to lazyOnload to match working dentist page */}
       <Script
         src="https://unpkg.com/@elevenlabs/convai-widget-embed"
         strategy="lazyOnload"
@@ -43,3 +42,4 @@ export default function DemoCosmetic() {
     </>
   );
 }
+
