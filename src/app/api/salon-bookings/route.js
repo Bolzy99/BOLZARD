@@ -59,3 +59,30 @@ export async function DELETE(request) {
 
   return NextResponse.json({ message: 'Booking deleted' }, { status: 200 });
 }
+
+// PATCH: Check time slot availability (Required for your n8n workflow)
+export async function PATCH(request) {
+  try {
+    const { date, time } = await request.json();
+
+    // Query the database to see if any booking exists for this date/time
+    const { data, error } = await supabase
+      .from('salon_bookings')
+      .select('id')
+      .eq('date', date)
+      .eq('time', time);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // If data array is empty, it means the slot is available (true)
+    // If data array has items, it means the slot is taken (false)
+    const isAvailable = data.length === 0;
+
+    return NextResponse.json({ available: isAvailable }, { status: 200 });
+
+  } catch (err) {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+}
