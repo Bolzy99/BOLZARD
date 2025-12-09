@@ -80,7 +80,7 @@ const AboutPage = () => {
               {/* Name and Role */}
               <div className="text-center mb-6">
                 <h2 className="text-4xl font-bold text-white">Ethan</h2>
-                <p className="text-lg text-purple-400 font-medium">Co-Founder & Systems Architect</p>
+                <p className="text-lg text-purple-400 font-medium">Strategic Partner</p>
               </div>
 
               {/* Bio */}
