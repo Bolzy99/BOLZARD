@@ -95,6 +95,8 @@ const Hero = () => {
         { id: 4, text: 'Absolutely. Our system handles Instagram DMs with a human-like touch.', isBot: true, hasButtons: true },
         { id: 5, text: 'What about scaling my outreach with cold texting?', avatar: 'https://i.pravatar.cc/32?u=user3', isBot: false },
         { id: 6, text: 'We handle that too. Our platform automates personalized cold texts to fill your sales pipeline.', isBot: true, hasButtons: true },
+        { id: 7, text: 'Can AI handle my incoming calls and bookings too?', avatar: 'https://i.pravatar.cc/32?u=user4', isBot: false },
+        { id: 8, text: 'Yes. Our AI voice receptionists answer calls, handle FAQs, and book appointments in multiple languages.', isBot: true, hasButtons: true },
     ];
 
     const [messages, setMessages] = useState([]);
