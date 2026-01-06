@@ -1,259 +1,252 @@
-"use client";
+// src/app/components/Features.jsx
+"use client"
 
-import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
-import Image from "next/image";
-import { Calendar, Check, Send, Clock, Bell, Settings, ArrowRightLeft, Zap, FileText, MessageSquare } from "lucide-react";
+import { motion, AnimatePresence } from 'framer-motion'
+import { useState } from 'react'
 
-// --- DATA ---
+// Enhanced features data with outcome-driven copy and premium positioning
 const features = [
   {
-    title: "AI-Powered Chatbots",
-    description: "Deploy intelligent chatbots that learn your brand voice and engage customers 24/7.",
-    imageUrl: "/images/chatbot-feature.png",
-    gradient: "from-purple-600 to-indigo-600",
+    title: 'Context-Aware AI Chatbots',
+    description: 'Autonomous sales agents that understand intent, handle objections, and guide visitors to conversion. Not a generic support script—a revenue driver.',
     benefits: [
-      { text: "Instantly answer any customer query using your company's knowledge base.", animation: "barChart" },
-      { text: "Book appointments, schedule calls, and send confirmations automatically.", animation: "calendar" },
-      { text: "Save customer insights and analytics, from pain points to CRM updates.", animation: "speechBubbles" }, // Changed animation
+      'Natural Language Understanding (NLU)',
+      'Instant Lead Qualification',
+      'Seamless Calendar Integration',
+      'Knowledge Base Training'
     ],
+    imageUrl: '/images/chatbot-feature.png',
+    gradient: 'from-blue-500 to-cyan-400',
+    icon: '🧠'
   },
   {
-    title: "Automated Outreach",
-    description: "Launch hyper-personalized campaigns that nurture leads automatically.",
-    imageUrl: "/images/outreach-feature.png",
-    gradient: "from-sky-600 to-cyan-600",
+    title: 'Background Outreach Engine',
+    description: 'Scale your prospecting without manual effort. Our system identifies, enriches, and engages leads across multiple channels continuously in the background.',
     benefits: [
-      { text: "Hyper-personalized cold outreach that adapts messaging to each prospect.", animation: "send" },
-      { text: "AI-driven scheduling for follow-ups via email, WhatsApp, and social channels.", animation: "clock" },
-      { text: "Track engagement rates and optimize campaigns in real-time.", animation: "bell" },
+      'Multi-Channel Sequencing (Email/SMS/Social)',
+      'Automated List Enrichment',
+      'Smart Reply Detection',
+      'A/B Testing Infrastructure'
     ],
+    imageUrl: '/images/outreach-feature.png',
+    gradient: 'from-purple-500 to-pink-500',
+    icon: '⚡'
   },
   {
-    title: "Dynamic Workflows",
-    description: "A visual, no-code builder for creating complex business automations.",
-    imageUrl: "/images/workflow-feature.png",
-    gradient: "from-emerald-600 to-green-600",
+    title: 'Workflow Infrastructure',
+    description: 'Transform fragmented tasks into a unified business logic. We connect your entire tech stack to eliminate data silos and manual operational drag.',
     benefits: [
-      { text: "Build powerful no-code workflows visually with drag-and-drop ease.", animation: "nodes" },
-      { text: "Integrate seamlessly with CRMs, payment systems, and third-party APIs.", animation: "gears" },
-      { text: "Automate repetitive tasks across departments, boosting team productivity.", animation: "cycle" },
+      'End-to-End Process Mapping',
+      'Error Handling & Recovery',
+      'Custom API Integrations',
+      'Real-Time Data Sync'
     ],
+    imageUrl: '/images/workflow-feature.png',
+    gradient: 'from-orange-500 to-amber-400',
+    icon: '🔄'
   },
   {
-    title: "Real-Time Analytics",
-    description: "Track your ROI from one beautiful, unified dashboard.",
-    imageUrl: "/images/analytics-feature.png",
-    gradient: "from-pink-600 to-rose-600",
+    title: 'Decision Intelligence',
+    description: 'Move beyond vanity metrics. Get actionable insights into pipeline health, agent performance, and conversion bottlenecks to optimize ROI.',
     benefits: [
-      { text: "Unified dashboard to monitor KPIs across all channels in real-time.", animation: "dashboard" },
-      { text: "AI-generated insights that highlight trends, anomalies, and opportunities.", animation: "lightbulb" },
-      { text: "Export-ready reports for investors, stakeholders, and internal reviews.", animation: "file" },
+      'Conversion Rate Optimization',
+      'Pipeline Velocity Tracking',
+      'Attribution Modeling',
+      'Custom Executive Dashboards'
     ],
-  },
-];
+    imageUrl: '/images/analytics-feature.png',
+    gradient: 'from-emerald-500 to-teal-400',
+    icon: '📊'
+  }
+]
 
-export default function Features() {
-  const [hoveredIndex, setHoveredIndex] = useState(null);
+const Features = () => {
+  const [activeFeature, setActiveFeature] = useState(0)
 
   return (
-    <section
-      className="relative w-full min-h-screen py-24 bg-transparent text-white px-6 flex flex-col items-center justify-center"
-    >
-      <div className="max-w-4xl mx-auto text-center mb-12">
-        <h2 className="text-5xl md:text-6xl font-bold">Our Core Features</h2>
-        <p className="text-lg md:text-xl mt-4 text-white/70 max-w-3xl">
-          A closer look at our elite automation suite. Hover to see the benefits.
-        </p>
-      </div>
+    <section className="py-32 px-6 relative overflow-hidden">
+      {/* 
+        Global background preserved: 
+        No solid background colors applied to section or container.
+        Using only gradients and blurs for visibility.
+      */}
+      
+      <div className="max-w-7xl mx-auto relative z-10">
+        
+        {/* Section Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-center mb-24"
+        >
+          <h2 className="text-5xl md:text-6xl font-bold mb-6 text-white tracking-tight drop-shadow-lg">
+            Enterprise-Grade <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+              Automation Infrastructure
+            </span>
+          </h2>
+          <p className="text-xl text-slate-300 max-w-3xl mx-auto font-light leading-relaxed">
+            We don't just implement tools. We build the invisible engine that powers your growth, 
+            handling thousands of interactions while you focus on strategy.
+          </p>
+        </motion.div>
 
-      <div
-        className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-6"
-        onMouseLeave={() => setHoveredIndex(null)}
-      >
-        {features.map((_, index) => (
-          <FeatureCard
-            key={index}
-            index={index}
-            hoveredIndex={hoveredIndex}
-            setHoveredIndex={setHoveredIndex}
-          />
-        ))}
+        <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-start">
+          
+          {/* Left Column: Feature Navigation */}
+          <div className="w-full lg:w-5/12 space-y-4">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                onClick={() => setActiveFeature(index)}
+                className={`
+                  group relative p-6 rounded-2xl cursor-pointer transition-all duration-500 overflow-hidden
+                  border backdrop-blur-sm
+                  ${activeFeature === index 
+                    ? 'border-white/20 bg-white/5 shadow-2xl' 
+                    : 'border-transparent hover:bg-white/5 hover:border-white/10'
+                  }
+                `}
+              >
+                {/* Active Glow Gradient */}
+                <div 
+                  className={`absolute inset-0 opacity-0 transition-opacity duration-700 pointer-events-none
+                    bg-gradient-to-r ${feature.gradient} blur-3xl -z-10
+                    ${activeFeature === index ? 'opacity-20' : 'group-hover:opacity-10'}
+                  `}
+                />
+
+                <div className="flex items-start gap-5 relative z-10">
+                  {/* Icon Container */}
+                  <div className={`
+                    w-12 h-12 rounded-xl flex items-center justify-center text-2xl
+                    transition-all duration-500 shadow-inner
+                    ${activeFeature === index 
+                      ? 'bg-gradient-to-br from-white/20 to-white/5 text-white scale-110 ring-1 ring-white/30' 
+                      : 'bg-white/5 text-slate-400 group-hover:bg-white/10 group-hover:text-slate-200'
+                    }
+                  `}>
+                    {feature.icon}
+                  </div>
+
+                  <div className="flex-1">
+                    <h3 className={`
+                      text-xl font-bold mb-2 transition-colors duration-300
+                      ${activeFeature === index ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}
+                    `}>
+                      {feature.title}
+                    </h3>
+                    
+                    <motion.div
+                      initial={false}
+                      animate={{ 
+                        height: activeFeature === index ? 'auto' : 0,
+                        opacity: activeFeature === index ? 1 : 0
+                      }}
+                      transition={{ duration: 0.4, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                        {feature.description}
+                      </p>
+                      
+                      {/* Interactive Benefits List */}
+                      <div className="space-y-2 pt-2 border-t border-white/10">
+                        {feature.benefits.map((benefit, i) => (
+                          <motion.div 
+                            key={i}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.1 }}
+                            className="flex items-center gap-3 text-xs font-medium text-slate-400 group-hover/item:text-white"
+                          >
+                            <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${feature.gradient}`} />
+                            {benefit}
+                          </motion.div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  </div>
+                </div>
+
+                {/* Progress Indicator for Active Item */}
+                {activeFeature === index && (
+                  <motion.div 
+                    layoutId="active-bar"
+                    className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b ${feature.gradient}`}
+                  />
+                )}
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Right Column: Visual Showcase */}
+          <div className="w-full lg:w-7/12 sticky top-32">
+            <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black/40 backdrop-blur-xl group">
+              
+              {/* Dynamic Glow Behind Image */}
+              <AnimatePresence mode="wait">
+                <motion.div 
+                  key={`glow-${activeFeature}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.3 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1 }}
+                  className={`absolute inset-0 bg-gradient-to-tr ${features[activeFeature].gradient} blur-[100px] z-0`}
+                />
+              </AnimatePresence>
+
+              {/* Feature Image with Transitions */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeFeature}
+                  initial={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+                  transition={{ duration: 0.6, ease: "circOut" }}
+                  className="relative z-10 w-full h-full p-1"
+                >
+                  <div className="w-full h-full rounded-2xl overflow-hidden relative">
+                    {/* Glass Overlay/Reflection */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none z-20 mix-blend-overlay" />
+                    
+                    <img 
+                      src={features[activeFeature].imageUrl}
+                      alt={features[activeFeature].title}
+                      className="w-full h-full object-cover object-center transform transition-transform duration-[10s] ease-linear group-hover:scale-110"
+                    />
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Floating Status Badge */}
+              <motion.div 
+                key={`badge-${activeFeature}`}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+                className="absolute bottom-6 right-6 z-30 flex items-center gap-2 px-4 py-2 rounded-full bg-black/60 border border-white/10 backdrop-blur-md"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-gradient-to-r ${features[activeFeature].gradient}`}></span>
+                  <span className={`relative inline-flex rounded-full h-2 w-2 bg-gradient-to-r ${features[activeFeature].gradient}`}></span>
+                </span>
+                <span className="text-xs font-mono text-white/90 tracking-wide uppercase">System Active</span>
+              </motion.div>
+
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
-  );
+  )
 }
 
-const FeatureCard = ({ index, hoveredIndex, setHoveredIndex }) => {
-  const isOther = hoveredIndex !== null && hoveredIndex !== index;
-  
-  const feature = features[index];
-  const benefitToShow = isOther
-    ? features[hoveredIndex].benefits[
-        (index + features.length - hoveredIndex - 1) % (features.length - 1)
-      ]
-    : null;
-
-  const gradient = isOther ? `bg-gradient-to-br ${features[hoveredIndex].gradient}` : "bg-neutral-900";
-
-  return (
-    <div
-      className={`relative rounded-3xl p-6 shadow-2xl backdrop-blur-md border border-white/10 flex flex-col cursor-pointer h-[400px] ${gradient}`}
-      onMouseEnter={() => setHoveredIndex(index)}
-    >
-      <AnimatePresence mode="wait">
-        {isOther && benefitToShow ? (
-          <motion.div
-            key="benefit"
-            className="flex flex-col h-full"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-          >
-            <div className="flex-1 flex items-center justify-center">
-              <BenefitAnimation type={benefitToShow.animation} />
-            </div>
-            <p className="text-white/90 text-center text-lg leading-relaxed h-1/3 pt-4">
-              {benefitToShow.text}
-            </p>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="content"
-            className="flex flex-col h-full"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="relative w-full h-2/3 rounded-xl overflow-hidden mb-4">
-              <Image src={feature.imageUrl} alt={feature.title} fill className="object-cover" />
-            </div>
-            <h3 className="text-white font-bold text-xl mb-1">{feature.title}</h3>
-            <p className="text-white/80 text-base flex-1">{feature.description}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
-
-const BenefitAnimation = ({ type }) => {
-  const container = "w-full h-full relative flex items-center justify-center";
-
-  switch (type) {
-    case "barChart":
-      return (
-        <div className={`${container} flex items-end gap-2`}>
-          {[30, 60, 40, 75, 50].map((h, i) => (
-            <motion.div
-              key={i}
-              className="w-5 bg-white/50 rounded-t-sm"
-              initial={{ height: "0%" }}
-              animate={{ height: `${h}%` }}
-              transition={{ duration: 1.5, delay: i * 0.1, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }}
-            />
-          ))}
-        </div>
-      );
-    case "calendar":
-        return (
-            <div className={container}>
-                <div className="w-1/2 h-1/2 border-2 border-white/50 rounded-lg p-2">
-                    <div className="w-full border-b-2 border-white/50 pb-1 flex justify-between px-2">
-                        {[...Array(3)].map((_, i) => <div key={i} className="w-2 h-2 bg-white/30 rounded-full"/>)}
-                    </div>
-                </div>
-                <motion.div className="absolute" initial={{scale: 0}} animate={{scale: 1}} transition={{delay: 0.5, type: 'spring', stiffness: 200, damping: 10}}>
-                     <Check className="w-10 h-10 text-white"/>
-                </motion.div>
-            </div>
-        );
-    case "speechBubbles":
-      return (
-        <div className={container}>
-          <motion.div
-            animate={{ y: [-4, 4, -4], opacity: [0, 1, 0] }}
-            transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-          >
-            <MessageSquare className="w-10 h-10 text-white" />
-          </motion.div>
-          <motion.div
-            className="absolute"
-            animate={{ y: [4, -4, 4], opacity: [0, 1, 0] }}
-            transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
-          >
-            <MessageSquare className="w-10 h-10 text-white transform scale-x-[-1]" />
-          </motion.div>
-        </div>
-      );
-    case "send":
-        return (
-            <div className={container}>
-                <motion.div initial={{x: -100, opacity: 0}} animate={{x: 100, opacity: [0, 1, 0]}} transition={{duration: 2.5, repeat: Infinity, ease: 'linear'}}>
-                    <Send className="w-16 h-16 text-white"/>
-                </motion.div>
-            </div>
-        );
-    case "clock":
-        return (
-            <div className={container}>
-                <motion.div className="w-24 h-24 border-2 border-white/50 rounded-full"/>
-                <motion.div className="absolute w-0.5 h-8 bg-white" style={{originY: 1, top: '50%', left: '50%', transform: 'translate(-50%, -100%)'}} animate={{rotate: 360}} transition={{duration: 10, repeat: Infinity, ease: 'linear'}}/>
-            </div>
-        );
-    case "bell":
-        return (
-            <motion.div className={container} animate={{rotate: [0, -10, 10, -10, 10, 0]}} transition={{duration: 1.8, repeat: Infinity, ease: 'easeInOut'}}>
-                <Bell className="w-16 h-16 text-white"/>
-            </motion.div>
-        );
-    case "nodes":
-        return (
-            <svg className={container} viewBox="0 0 100 50">
-                <motion.line x1="15" y1="25" x2="85" y2="25" stroke="white" strokeWidth="1" strokeDasharray="2 2"/>
-                <motion.circle cx="15" cy="25" r="4" fill="white" animate={{cx: 85}} transition={{duration: 4, repeat: Infinity, repeatType: "reverse", ease: 'easeInOut'}}/>
-                <motion.circle cx="85" cy="25" r="4" fill="white" animate={{cx: 15}} transition={{duration: 4, repeat: Infinity, repeatType: "reverse", ease: 'easeInOut'}}/>
-            </svg>
-        );
-    case "gears":
-        return (
-            <div className={container}>
-                <motion.div animate={{rotate: 360}} transition={{duration: 12, repeat: Infinity, ease: 'linear'}}><Settings className="w-16 h-16 text-white/80"/></motion.div>
-                <motion.div className="absolute" animate={{rotate: -360}} transition={{duration: 8, repeat: Infinity, ease: 'linear'}}><Settings className="w-12 h-12 text-white/60"/></motion.div>
-            </div>
-        );
-    case "cycle":
-        return (
-            <motion.div className={container} animate={{rotate: 360}} transition={{duration: 8, repeat: Infinity, ease: 'linear'}}>
-                <ArrowRightLeft className="w-16 h-16 text-white"/>
-            </motion.div>
-        );
-    case "dashboard":
-        return (
-            <div className={`${container} flex items-end gap-2`}>
-                <motion.div className="w-5 bg-white/70 rounded-t" animate={{height: ['25%', '75%', '45%']}} transition={{duration: 2.5, repeat: Infinity, repeatType: "mirror"}}/>
-                <motion.div className="w-5 bg-white/50 rounded-t" animate={{height: ['55%', '35%', '65%']}} transition={{duration: 2.5, repeat: Infinity, repeatType: "mirror", delay: 0.5}}/>
-                <motion.div className="w-5 bg-white/70 rounded-t" animate={{height: ['40%', '60%', '30%']}} transition={{duration: 2.5, repeat: Infinity, repeatType: "mirror", delay: 1}}/>
-            </div>
-        );
-    case "lightbulb":
-        return (
-            <motion.div className={container} animate={{scale: [1, 1.05, 1], filter: ['brightness(1.2)', 'brightness(1.8)', 'brightness(1.2)']}} transition={{duration: 2, repeat: Infinity, repeatType: "mirror"}}>
-                <Zap className="w-20 h-20 text-yellow-400"/>
-            </motion.div>
-        );
-    case "file":
-        return (
-            <div className={container}>
-                <FileText className="w-16 h-16 text-white"/>
-                <motion.div className="absolute w-10 h-0.5 bg-white/80" style={{top: '40%'}} initial={{scaleX: 0, originX: 0}} animate={{scaleX: 1}} transition={{duration: 2, repeat: Infinity, delay: 0.5, repeatType: "reverse"}}/>
-                <motion.div className="absolute w-10 h-0.5 bg-white/80" style={{top: '50%'}} initial={{scaleX: 0, originX: 0}} animate={{scaleX: 1}} transition={{duration: 2, repeat: Infinity, delay: 1, repeatType: "reverse"}}/>
-                <motion.div className="absolute w-10 h-0.5 bg-white/80" style={{top: '60%'}} initial={{scaleX: 0, originX: 0}} animate={{scaleX: 1}} transition={{duration: 2, repeat: Infinity, delay: 1.5, repeatType: "reverse"}}/>
-            </div>
-        );
-    default:
-      return null;
-  }
-};
+export default Features
