@@ -1,99 +1,172 @@
+// src/app/components/ServicesPage.jsx
 "use client"
-import Image from 'next/image';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion'
+import { useRef } from 'react'
+import Image from 'next/image'
 
 const services = [
   {
-    title: "Social Media Autopilot",
-    description: "Our AI learns your brand's unique voice to engage potential clients across all platforms. It answers questions, qualifies leads, and guides them towards booking a call—all without you lifting a finger.",
-    imageUrl: "/images/service-social.png", // Make sure these images exist in your /public/images folder
+    title: 'AI Voice Receptionist Agents',
+    description: 'Deploy 24/7 multilingual voice agents that handle incoming calls, answer FAQs, and book reservations directly into your calendar without human intervention.',
+    icon: '🎙️',
+    features: ['Instant Call Answering', 'Real-time Transcription', 'CRM Integration', 'Multilingual Support'],
+    image: '/images/service-voice.png' // Update path if needed
   },
   {
-    title: "Websites with an AI Brain",
-    description: "We build more than websites; we build intelligent digital experiences. Each site and Progressive Web App (PWA) comes with a powerful, integrated chatbot at its core, creating immersive and unforgettable user journeys.",
-    imageUrl: "/images/service-website.png",
+    title: 'Outreach & Nurture Engines',
+    description: 'Automate your entire prospecting pipeline. Our background systems identify leads, enrich data, and execute multi-channel outreach campaigns (Email, SMS, WhatsApp) at scale.',
+    icon: '🚀',
+    features: ['Lead Identification', 'Multi-Channel Sequencing', 'Automated Follow-ups', 'Reply Detection'],
+    image: '/images/service-outreach.png'
   },
   {
-    title: "Automated Outreach Engine",
-    description: "Define your ideal client, and let Bolzard do the rest. Our system handles everything from hyper-personalized cold outreach to intelligent follow-ups, warming up leads so you can focus on closing.",
-    imageUrl: "/images/service-outreach.png",
+    title: 'Social Media DM Automation',
+    description: 'Turn your DMs into a conversion channel. Qualify leads instantly on Instagram and Facebook with human-like conversations that guide users to purchase or book.',
+    icon: '💬',
+    features: ['Instant Replies', 'Lead Qualification', 'Story Reaction Handling', 'Comment-to-DM Triggers'],
+    image: '/images/service-social.png'
   },
   {
-    title: "Next-Gen SEO Dominance",
-    description: "Build a brand that's impossible to ignore. We deploy a sophisticated, multi-faceted SEO strategy that elevates your presence, ensuring you appear everywhere your ideal clients are looking.",
-    imageUrl: "/images/service-seo.png",
+    title: 'Intelligent Website Chatbots',
+    description: 'More than a support tool. A context-aware sales agent that understands visitor intent, answers specific product questions, and drives conversions 24/7.',
+    icon: '🧠',
+    features: ['Contextual Understanding', 'Booking Integration', 'Knowledge Base Training', 'Live Handover'],
+    image: '/images/service-website.png'
   },
   {
-    title: "Unified Analytics Dashboard",
-    description: "Clarity in a single click. Get a bird's-eye view of your entire business, from client acquisition metrics to real-time revenue, all presented in one beautiful, intuitive dashboard.",
-    imageUrl: "/images/service-analytics.png",
+    title: 'Workflow & Internal Automation',
+    description: 'Eliminate manual bottlenecks. We connect your apps (Slack, Airtable, HubSpot, etc.) to create a unified operating system that runs your business logic automatically.',
+    icon: '⚙️',
+    features: ['Custom API Integrations', 'Error Handling', 'Data Synchronization', 'Process Mapping'],
+    image: '/images/analytics-feature.png'
+  },
+  {
+    title: 'Conversion-Focused Web Development',
+    description: 'High-performance websites and PWAs built for speed and SEO. Designed specifically to integrate seamlessly with our automation infrastructure for maximum leverage.',
+    icon: '💻',
+    features: ['Next.js Architecture', 'SEO Optimization', 'Fast Load Times', 'Automation Native'],
+    image: '/images/service-seo.png'
   },
   {
     title: "Strategic Partnership",
     description: "Have a vision to reshape an industry? We partner with ambitious minds to build groundbreaking automated solutions. If you're ready to build the future, let's talk.",
-    imageUrl: "/images/service-partner.png",
-  },
-];
+    icon: '🤝',
+    features: ['Co-Building Visionary Projects', 'Revenue Share Models', 'Industry Transformation', 'Long-term Partnership'],
+    image: '/images/service-partner.png'
+  }
+]
 
-const ServiceCard = ({ title, description, imageUrl, index }) => (
-  <motion.div 
-    className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8 grid md:grid-cols-2 gap-8 items-center"
-    initial={{ opacity: 0, y: 50 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.5, delay: index * 0.1 }}
-  >
-    <div className={`relative h-64 rounded-lg overflow-hidden ${index % 2 === 0 ? 'md:order-1' : 'md:order-2'}`}>
-      <Image src={imageUrl} alt={title} fill style={{ objectFit: 'cover' }} sizes="50vw" />
-    </div>
-    <div className={`flex flex-col justify-center ${index % 2 === 0 ? 'md:order-2' : 'md:order-1'}`}>
-      {/* UPDATED: Applied gradient classes to the service card title */}
-      <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-500 to-cyan-400 text-transparent bg-clip-text">
-        {title}
-      </h3>
-      <p className="text-lg text-slate-300">{description}</p>
-    </div>
-  </motion.div>
-);
-
-const ServicesPage = () => {
+const ServiceTile = ({ service, index }) => {
+  const isEven = index % 2 === 0
+  
   return (
-    // 1. This wrapper lifts the content in front of the particle background
-    <div className="relative z-10">
-      {/* 2. This container is now transparent and the redundant Navbar is removed */}
-      <main className="text-white min-h-screen">
-        <div className="pt-40 pb-20 px-8 text-center">
-          <h1 className="text-6xl font-black bg-gradient-to-r from-purple-500 to-cyan-400 text-transparent bg-clip-text mb-4">
-            Our Services
-          </h1>
-          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-            We transform complex problems into elegant, intelligent automations. Explore how we can build your future.
+    <motion.div 
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.7, ease: "easeOut" }}
+      className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 lg:gap-20 py-16`}
+    >
+      {/* Content Side */}
+      <div className="flex-1 space-y-8">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/10 to-transparent border border-white/10 flex items-center justify-center text-2xl shadow-inner">
+            {service.icon}
+          </div>
+          <span className="text-sm font-mono text-slate-500 uppercase tracking-widest">
+            0{index + 1} / Capability
+          </span>
+        </div>
+
+        <div>
+          <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
+            {service.title}
+          </h3>
+          <p className="text-slate-400 text-lg font-light leading-relaxed">
+            {service.description}
           </p>
         </div>
 
-        <div className="max-w-6xl mx-auto px-8 space-y-16 pb-24">
-          {services.map((service, index) => (
-            <ServiceCard key={index} {...service} index={index} />
+        <div className="grid grid-cols-2 gap-3">
+          {service.features.map((feature, i) => (
+            <div 
+              key={i}
+              className="flex items-center gap-2 text-sm text-slate-300 bg-white/5 border border-white/5 rounded-lg px-3 py-2"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+              {feature}
+            </div>
           ))}
+        </div>
+      </div>
 
-          <div className="text-center border-t border-white/10 pt-16">
-            <h3 className="text-4xl font-bold mb-4">Have a Different Challenge?</h3>
-            <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-8">If you can describe it, we can automate it. Let's discuss your unique needs and build a custom solution from the ground up.</p>
-            <Link href="/book-call" legacyBehavior>
-              <motion.a
-                className="inline-block px-10 py-4 rounded-full text-lg font-bold text-white cursor-pointer shadow-lg"
-                style={{ backgroundColor: '#007cf0' }}
-                whileHover={{ scale: 1.05, boxShadow: "0 0 25px #007cf0" }}
-              >
-                Book a Free Consultation
-              </motion.a>
-            </Link>
+      {/* Image Side */}
+      <div className="flex-1 w-full">
+        <div className="relative aspect-[4/3] rounded-3xl overflow-hidden border border-white/10 shadow-2xl group">
+          {/* Glass Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-black/40 to-transparent z-10 pointer-events-none" />
+          
+          {/* Hover Glow */}
+          <div className="absolute inset-0 bg-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-3xl z-20 pointer-events-none mix-blend-overlay" />
+
+          {/* Image */}
+          <div className="relative w-full h-full transform transition-transform duration-700 group-hover:scale-105">
+            <Image
+              src={service.image}
+              alt={service.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
           </div>
         </div>
-      </main>
-    </div>
-  );
-};
+      </div>
+    </motion.div>
+  )
+}
 
-export default ServicesPage;
+const ServicesPage = () => {
+  return (
+    <section className="py-32 px-6 relative overflow-hidden">
+      {/* Global Background Preserved (Transparent) */}
+      
+      <div className="max-w-7xl mx-auto relative z-10 space-y-12">
+        
+        {/* Section Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-32"
+        >
+          <div className="inline-block mb-6">
+             <span className="py-1 px-4 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-mono tracking-widest uppercase">
+               Our Capabilities
+             </span>
+          </div>
+          <h2 className="text-5xl md:text-7xl font-bold text-white mb-8 tracking-tight">
+            Built for <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+              Infinite Scale
+            </span>
+          </h2>
+          <p className="text-xl text-slate-300 max-w-2xl mx-auto font-light leading-relaxed">
+            We don't just sell software. We architect and deploy complete automation ecosystems 
+            that operate your business infrastructure with machine-like precision.
+          </p>
+        </motion.div>
+
+        {/* Vertical Services Stack */}
+        <div className="space-y-12">
+          {services.map((service, index) => (
+            <ServiceTile key={index} service={service} index={index} />
+          ))}
+        </div>
+
+      </div>
+    </section>
+  )
+}
+
+export default ServicesPage
